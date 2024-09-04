@@ -1,2 +1,3 @@
-# 3sem_24
-OS practice 3rd term (RT)
+# useful links:
+
+[Telegram link](https://t.me/+drXmhjbatyI0YWU6)

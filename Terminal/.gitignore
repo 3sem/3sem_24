@@ -1,4 +1,5 @@
 build/
+example/build
 
 *.a
 *.so

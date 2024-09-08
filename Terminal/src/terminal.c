@@ -35,100 +35,97 @@ int run_cmd()
 	fgets(cmd, sizeof(cmd), stdin);
 	cmd[strcspn(cmd, "\n")] = '\0';
 
-	return process(cmd);
+	return process(cmd, STDIN_FILENO);
 }
 
-int process(char* cmd)
+int process(char* cmd, int in_fd)
 {
-	char *pipe_pos = strchr(cmd, '|');
+    char *pipe_pos = strchr(cmd, '|');
 
-	if (pipe_pos != NULL)
-	{
-		printf("pipe detected\n");
+    if (pipe_pos != NULL)
+    {
+        printf("pipe detected\n");
 
-		*pipe_pos = '\0';
-		char* r_cmd = ++pipe_pos;
-		char* w_cmd = cmd;
+        *pipe_pos = '\0';
+        char* r_cmd = ++pipe_pos;
+        char* w_cmd = cmd;
 
-		int fds[2] = {};
+        int fds[2] = {};
 
-		DO_SAFELY(pipe, fds);
-		int r_desctiptor = fds[0];
-		int w_desctiptor = fds[1];
+        DO_SAFELY(pipe, fds);
+        int r_descriptor = fds[0];
+        int w_descriptor = fds[1];
 
-		pid_t w_pid = 0;
-		FORK(w_pid);
+        pid_t w_pid = 0;
+        FORK(w_pid);
 
-		if (w_pid == 0)
-		{
-			printf("write child executing\n");
+        if (w_pid == 0)
+        {
+            printf("write child executing\n");
 
-			DO_SAFELY(dup2, w_desctiptor, STDOUT_FILENO);
-			close(fds[0]);
-  			close(fds[1]);
+            DO_SAFELY(dup2, w_descriptor, STDOUT_FILENO);
+            if (in_fd != STDIN_FILENO)
+                DO_SAFELY(dup2, in_fd, STDIN_FILENO);
 
-			char* args[MAX_ARGS_AMOUNT] = {};
+            close(fds[0]);
+            close(fds[1]);
 
-			parse_cmd(w_cmd, args);
+            char* args[MAX_ARGS_AMOUNT] = {};
 
-			DO_SAFELY(execvp, args[0], args);
-		}
-		else
-		{
-			pid_t r_pid = 0;
-			FORK(r_pid);
+            parse_cmd(w_cmd, args);
 
-			if(r_pid == 0)
-			{
-				printf("read child executing\n");
+            DO_SAFELY(execvp, args[0], args);
+        }
+        else
+        {
+            pid_t r_pid = 0;
+            FORK(r_pid);
 
-				DO_SAFELY(dup2, r_desctiptor, STDIN_FILENO);
-				close(fds[0]);
-  				close(fds[1]);
+            if (r_pid == 0)
+            {
+                close(fds[1]); // Закрываем дескриптор записи для дочернего процесса чтения
+                process(r_cmd, r_descriptor);
+            }
+            else
+            {
+                close(fds[0]);
+                close(fds[1]);
 
-				char* args[MAX_ARGS_AMOUNT] = {};
+                int status = 0;
+                waitpid(w_pid, &status, 0);
+                printf("status: %d\n", WEXITSTATUS(status));
+                waitpid(r_pid, &status, 0);
+                printf("status: %d\n", WEXITSTATUS(status));
+            }
+        }
+    }
+    else
+    {
+        printf("no pipe\n");
 
-				parse_cmd(r_cmd, args);
+        pid_t pid = 0;
+        FORK(pid);
 
-				DO_SAFELY(execvp, args[0], args);
-			}
-			else
-			{
-				close(fds[0]);
-  				close(fds[1]);
-				int status = 0;
+        if (pid == 0)
+        {
+            DO_SAFELY(dup2, in_fd, STDIN_FILENO);
+            close(in_fd);
 
-				waitpid(w_pid, &status, 0);
-				printf("status: %d\n", WEXITSTATUS(status));
-				waitpid(r_pid, &status, 0);
-				printf("status: %d\n", WEXITSTATUS(status));
-			}
+            char* args[MAX_ARGS_AMOUNT] = {};
 
-		}
-	}
-	else
-	{
-		printf("no pipe\n");
+            parse_cmd(cmd, args);
 
-		pid_t pid = 0;
-		FORK(pid);
-
-		if (pid == 0)
-		{
-			char* args[MAX_ARGS_AMOUNT] = {};
-
-			parse_cmd(cmd, args);
-
-			DO_SAFELY(execvp, args[0], args);
-		}
-		else
-		{
-			int status = 0;
-			waitpid(pid, &status, 0);
-			printf("status: %d\n", WEXITSTATUS(status));
-		}
-	}
+            DO_SAFELY(execvp, args[0], args);
+        }
+        else
+        {
+            int status = 0;
+            waitpid(pid, &status, 0);
+            printf("status: %d\n", WEXITSTATUS(status));
+        }
+    }
 }
+
 
 int parse_cmd(char* cmd, char* args[MAX_ARGS_AMOUNT])
 {

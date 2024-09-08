@@ -1,3 +1,9 @@
-*.o
+build/
+
+*.a
+*.so
+*.exe
 *.out
-main
+*.o
+*.obj
+*.dll

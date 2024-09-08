@@ -1,0 +1,6 @@
+/Users/bulatmotygullin/Documents/Efanov/OS_Projects/Terminal/example/build/CMakeFiles/main.dir
+/Users/bulatmotygullin/Documents/Efanov/OS_Projects/Terminal/example/build/CMakeFiles/edit_cache.dir
+/Users/bulatmotygullin/Documents/Efanov/OS_Projects/Terminal/example/build/CMakeFiles/rebuild_cache.dir
+/Users/bulatmotygullin/Documents/Efanov/OS_Projects/Terminal/example/build/Terminal/CMakeFiles/terminal.dir
+/Users/bulatmotygullin/Documents/Efanov/OS_Projects/Terminal/example/build/Terminal/CMakeFiles/edit_cache.dir
+/Users/bulatmotygullin/Documents/Efanov/OS_Projects/Terminal/example/build/Terminal/CMakeFiles/rebuild_cache.dir

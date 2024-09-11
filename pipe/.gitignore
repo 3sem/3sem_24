@@ -1,0 +1,10 @@
+# JSON files
+.vscode
+
+# Executables
+*.exe
+*.out
+*.o
+
+# Folders
+main

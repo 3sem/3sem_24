@@ -124,6 +124,8 @@ int process(char* cmd, int in_fd)
             printf("status: %d\n", WEXITSTATUS(status));
         }
     }
+
+	return 0;
 }
 
 

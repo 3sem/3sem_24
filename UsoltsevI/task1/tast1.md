@@ -8,7 +8,6 @@ Computer technologies, task 1, Terminal emulator.
 To build the project go to [UsoltsevI/task1/](UsoltsevI/task1/) folder and run the following command:
 ```
 cmake -DCMAKE_BUILD_TYPE=Release -S . -B build
-
 ```
 
 Then use it:

@@ -22,7 +22,7 @@ static char **parse_cmd(const char *start, const char *end) {
 
     for (int i = 0; i < num_words; ++i) {
         int shift = 0;
-        result[i] = get_next_word(start + end_index, &shift);
+        result[i] = get_next_word(start + end_index, end - start - end_index, &shift);
         end_index += shift;
     }
 

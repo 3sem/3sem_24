@@ -62,7 +62,7 @@ int count_words_in_string(const char *str, int len) {
     return counter;
 }
 
-char *get_next_word(const char *str, int *end_index) {
+char *get_next_word(const char *str, int len, int *end_index) {
     if (str == NULL) {
         return 0;
     }
@@ -70,17 +70,17 @@ char *get_next_word(const char *str, int *end_index) {
     int start = 0;
     int end = 0;
 
-    while (str[start] != '\0' && constains_char(DELIMS, str[start])) {
+    while (start < len && str[start] != '\0' && constains_char(DELIMS, str[start])) {
         ++start;
     }
 
-    if (str[start] == '\0') {
+    if (str[start] == '\0' || start == len) {
         return NULL;
     }
 
     end = start;
 
-    while (str[end] != '\0' && !constains_char(DELIMS, str[end])) {
+    while (end < len && str[end] != '\0' && !constains_char(DELIMS, str[end])) {
         ++end;
     }
 

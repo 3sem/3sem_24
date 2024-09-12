@@ -13,4 +13,4 @@ project("uso-terminal")
 add_subdirectory(cmd-runner-lib)
 
 add_executable(uso-terminal uso-terminal.c)
-target_link_libraries(cmd-runner PUBLIC cmd-runner)
+target_link_libraries(uso-terminal PUBLIC cmd-runner)

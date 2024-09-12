@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "../cmd-runner.h"
+#include "../include/cmd-parser.h"
 
 static void exec_cmd(char ***cmd) {
     pid_t pid;
@@ -12,7 +13,10 @@ static void exec_cmd(char ***cmd) {
 
     int i = 0;
     while (cmd[i] != NULL) {
-        pipe(fds);
+        if (pipe(fds)) {
+            perror("pipe failed");
+            return;
+        }
         printf("New file descriptors: %d %d\n", fds[0], fds[1]);
         printf("input fds %d\n", fd_in);
 
@@ -48,7 +52,7 @@ static void exec_cmd(char ***cmd) {
     return;
 }
 
-void run_cmds(const char cmd) {
+void run_cmds(const char *cmd) {
     char ***cmds = parse_cmds(cmd);
     exec_cmd(cmds);
 }

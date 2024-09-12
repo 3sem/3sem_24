@@ -1,9 +1,16 @@
+//--------------------------------------------------------------------
+//
+// string-char implementation
+//
+//--------------------------------------------------------------------
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../include/string-char.h"
 
 static const char *SYMBOLS = "!()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-static const char *DELIMS = " ,.\n\t";
+static const char *DELIMS = " ,\n\t";
 
 int constains_char(const char *str, char c) {
     if (str == NULL) {
@@ -55,7 +62,7 @@ int count_words_in_string(const char *str, int len) {
     return counter;
 }
 
-char *get_next_word(const char *str) {
+char *get_next_word(const char *str, int *end_index) {
     if (str == NULL) {
         return 0;
     }
@@ -78,8 +85,23 @@ char *get_next_word(const char *str) {
     }
 
     char *result = (char *) calloc(end - start + 1, sizeof(char));
+    *end_index = end;
     
     memmove(result, &str[start], (end - start) * sizeof(char));
 
     return result;
+}
+
+const char *end_string(const char *str) {
+    if (str == NULL) {
+        return NULL;
+    }
+
+    const char *ptr = str;
+
+    while (*ptr != '\0') {
+        ++ptr;
+    }
+
+    return ptr;
 }

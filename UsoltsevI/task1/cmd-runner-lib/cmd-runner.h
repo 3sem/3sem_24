@@ -5,4 +5,4 @@
 //
 //--------------------------------------------------------------------
 
-void run_cmds(char cmds);
+void run_cmds(const char *cmds);

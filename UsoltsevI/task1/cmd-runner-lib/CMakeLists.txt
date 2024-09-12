@@ -7,6 +7,7 @@
 SET(SRCS
     source/cmd-runner.c 
     source/cmd-parser.c
+    source/string-char.c
 )
 
 add_library(cmd-runner STATIC ${SRCS})

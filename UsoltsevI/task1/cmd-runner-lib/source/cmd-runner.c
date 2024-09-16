@@ -81,5 +81,5 @@ static void free_char_ptr_ptr_ptr_buffer(char ***buf) {
 void run_cmds(const char *cmd) {
     char ***cmds = parse_cmds(cmd);
     exec_cmd(cmds);
-    free(cmds);
+    free_char_ptr_ptr_ptr_buffer(cmds);
 }

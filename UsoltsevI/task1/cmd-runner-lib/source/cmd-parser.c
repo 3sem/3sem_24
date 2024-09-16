@@ -17,7 +17,7 @@ static char **parse_cmd(const char *start, const char *end) {
 
     int num_words = count_words_in_string(start, end - start);
     
-    char **result = (char **) calloc(num_words, sizeof(char *));
+    char **result = (char **) calloc(num_words + 1, sizeof(char *));
     int end_index = 0;
 
     for (int i = 0; i < num_words; ++i) {

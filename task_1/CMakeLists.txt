@@ -17,8 +17,8 @@ project(cmd_emulator)
 
 include_directories(
     GLOBAL
-    ${CMAKE_CURRENT_SOURCE_DIR}/common/logging/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/logging/src
 )
 
-add_subdirectory(common/logging ${CMAKE_CURRENT_BINARY_DIR}/logging)
+add_subdirectory(logging ${CMAKE_CURRENT_BINARY_DIR}/logging)
 add_subdirectory(src ${CMAKE_CURRENT_BINARY_DIR}/cmd_emulator)

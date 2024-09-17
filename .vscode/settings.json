@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "cmd_run.h": "c",
+        "cmd_parsing.h": "c",
+        "types.h": "c",
+        "run_pipe.h": "c",
+        "parser.h": "c"
+    }
+}

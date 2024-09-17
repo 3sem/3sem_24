@@ -1,11 +1,12 @@
 /* this example shows how to implement the simplest solution of homework 1. */
 #include <unistd.h>
+#include <sys/types.h>
 #include <stdio.h>
 /* put your headers here */
 
 static void run_cmd(const char *cmd)
 {
-  const pid_t = fork();
+  const pid_t pid = fork();
   if (pid < 0) {
     printf("fork failed!\n");
   }

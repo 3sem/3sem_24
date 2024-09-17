@@ -1,0 +1,28 @@
+[484401]> starting string parsing
+[487505]> getting number of pipes:
+[487810]> pipe number is: 0
+[488728]> total number of pipes is: 1
+[488811]> parsing pipes:
+[494195]> parsing command:
+[494609]> parsing argument: 
+[495013]> current position is <2>, the rest of the string is < -l
+> 
+[495133]> number of symbols scanned is: <2>, the argument scanned is: <ls>
+[495463]> parsing argument: 
+[495487]> current position is <5>, the rest of the string is <
+> 
+[495501]> number of symbols scanned is: <2>, the argument scanned is: <-l>
+[495516]> parsing argument: 
+[496340]> command parsed
+[496420]> scanned command arguments are:
+[496558]> 0) ls
+[496625]> 1) -l
+[497036]> executing pipes:
+[497365]> pipe created
+[497464]> Descriptors:
+1) 4
+2) 5
+
+[497562]> Input fds 0
+
+[504651]> closing logfile

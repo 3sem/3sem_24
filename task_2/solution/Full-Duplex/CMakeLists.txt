@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(Full-Duplex)
+project(Full_Duplex)
 
 file(GLOB SRC_FILES src/*.c)
 

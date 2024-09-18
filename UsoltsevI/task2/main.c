@@ -2,8 +2,11 @@
 #include <unistd.h>
 #include "bigpipe.h"
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <time.h>
 #include <fcntl.h>
+#include <bits/fcntl-linux.h>
+// #include <asm-generic/fcntl.h>
 
 
 int main() {
@@ -13,25 +16,41 @@ int main() {
 
     Pipe* mpipe = construct_pipe(1024);
 
+    if (mpipe == NULL) {
+        fprintf(stderr, "mpipe == NULL\n");
+        return 1;
+    }
+
+    size_t sent     = 0;
+    size_t recieved = 0;
+
     pid_t pid = fork();
 
-    size_t sent = 0;
-    size_t recieved = 0;
+    pipe_set_pid(mpipe, pid); // for both of parent and child
 
     if (pid < 0) { // error
         perror("fork failure");
 
     } else if (pid > 0) { // parent way
-        sent = pipe_send_file(mpipe, pid, STDIN_FILENO);
-        recieved = pipe_recieve_file(mpipe, pid, STDOUT_FILENO);
+        int fd = open("out", O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+        sent     = pipe_send_file   (mpipe, STDIN_FILENO);
+        recieved = pipe_recieve_file(mpipe, fd);
+        close(fd);
 
     } else { // child way
-        int fd = open("temporary", O_RDWR | O_APPEND | O_CREAT, O_CLOEXEC);
+        int fd = open("temporary", O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
 
         printf("fd = %d\n", fd);
 
-        pipe_recieve_file(mpipe, pid, fd);
-        pipe_send_file(mpipe, pid, fd);
+        size_t child_recieved = pipe_recieve_file(mpipe, fd);
+        printf("child_recieved: %ld\n", child_recieved);
+
+        close(fd);
+
+        fd = open("temporary", O_RDONLY);
+
+        size_t child_sent = pipe_send_file(mpipe, fd);
+        printf("child_sent: %ld\n", child_sent);
 
         close(fd);
 

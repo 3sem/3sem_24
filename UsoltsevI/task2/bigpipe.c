@@ -43,8 +43,8 @@
 typedef struct op_table Ops;
 
 typedef struct op_table  {
-    size_t (*recieve)(Pipe *self, pid_t pid); 
-    size_t (*send)   (Pipe *self, pid_t pid); 
+    size_t (*recieve)(Pipe *self); 
+    size_t (*send)   (Pipe *self); 
 } Ops;
 
 struct pPipe {
@@ -52,28 +52,28 @@ struct pPipe {
     int fd_direct[2]; // array of r/w descriptors for "pipe()" call (for parent-->child direction)
     int fd_back[2]; // array of r/w descriptors for "pipe()" call (for child-->parent direction)
     size_t len; // data length in intermediate buffer
+    int pid;
     Ops actions;
 };  
 
-static size_t pipe_send_message(Pipe *self, pid_t pid) {
+static size_t pipe_send_message(Pipe *self) {
     CHECK_NOT_NULL_ARG(self, 0);
 
-    if (pid > 0) { // parent
-        return write(self->fd_direct[0], self->data, self->len);
+    if (self->pid > 0) { // parent
+        return write(self->fd_direct[1], self->data, self->len);
     }
 
-    return write(self->fd_back[0], self->data, self->len);
+    return write(self->fd_back[1], self->data, self->len);
 }
 
-static size_t pipe_recieve_message(Pipe *self, pid_t pid) {
+static size_t pipe_recieve_message(Pipe *self) {
     CHECK_NOT_NULL_ARG(self, 0);
 
-    if (pid > 0) { // parent
-        return read(self->fd_back[1], self->data, self->len);
+    if (self->pid > 0) { // parent
+        return read(self->fd_back[0], self->data, self->len);
     }
 
-    return read(self->fd_direct[1], self->data, self->len);
-
+    return read(self->fd_direct[0], self->data, self->len);
 }    
 
 Pipe *construct_pipe(size_t n) {
@@ -98,32 +98,62 @@ Pipe *construct_pipe(size_t n) {
     return new_pipe;
 }
 
-size_t pipe_send_file(Pipe *self, pid_t pid, int fd) {
+void pipe_set_pid(Pipe *self, int pid) {
+    self->pid = pid;
+
+    // if (pid > 0) {
+    //     close(self->fd_direct[0]);
+    //     close(self->fd_back[1]);
+
+    // } else {
+    //     close(self->fd_direct[0]);
+    //     close(self->fd_back[1]);
+    // }
+}
+
+size_t pipe_send_file(Pipe *self, int fd) {
     CHECK_NOT_NULL_ARG(self, 0);
 
     int char_read = 0;
     size_t bytes_sent = 0;
 
     while ((char_read = read(fd, self->data, self->len)) > 0) {
-        bytes_sent += self->actions.send(self, pid);
+        int shift = self->actions.send(self);
+        bytes_sent += shift;
+
+        printf("bytes_sent: %ld\n", bytes_sent);
+
+        CHECK_TRUE_PRINT_ERROR(shift != char_read);
     }
+
+    printf("SENDING IS FINISHED\n");
 
     return bytes_sent;
 }
 
-size_t pipe_recieve_file(Pipe *self, pid_t pid, int fd) {
+size_t pipe_recieve_file(Pipe *self, int fd) {
     CHECK_NOT_NULL_ARG(self, 0);
 
     int char_read = 0;
     int char_write = 0;
     size_t bytes_recieved = 0;
 
-    while ((char_read = self->actions.recieve(self, pid)) > 0) {
+    // if (pid == 0) {
+    //     close(self->fd_direct[0]);
+    // } else {
+    //     close(self->fd_back[1]);
+    // }
+
+    while ((char_read = self->actions.recieve(self)) > 0) {
         char_write = write(fd, self->data, char_read);
         bytes_recieved += char_read;
 
+        printf("bytes_recieved: %ld, char_read: %d\n", bytes_recieved, char_read);
+
         CHECK_TRUE_PRINT_ERROR(char_read != char_write)
     }
+
+    printf("RECIEVING IS FINISHED\n");
 
     return bytes_recieved;
 }

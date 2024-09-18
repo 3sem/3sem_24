@@ -143,7 +143,7 @@ static size_t countTokens (char* buffer, char sepSymbol)
         count++;
     }
 
-    if (begin != buffer) // Ignore the one command (no pipeline)
+    if (end == NULL) // one command can be parsed
     {
         count++;
     }

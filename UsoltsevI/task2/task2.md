@@ -66,6 +66,7 @@ $ ./build/bigpipe 32768 < short
 --BigPipe sending started
 ----------------file_size: 32768
 ----Recieved by the child: 32768
+--------Sent by the child: 32768
 -BigPipe sending finished
 ---------------Bytes sent: 32768
 -----------Bytes recieved: 32768

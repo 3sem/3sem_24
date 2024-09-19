@@ -1,12 +1,14 @@
+//-----------------------------------------------------------------
+//
+// bigpipe main file
+//
+//-----------------------------------------------------------------
+
 #include <stdio.h>
 #include <unistd.h>
-#include "bigpipe.h"
-#include <sys/stat.h>
-#include <sys/wait.h>
 #include <time.h>
 #include <fcntl.h>
-#include <bits/fcntl-linux.h>
-#include <string.h>
+#include "bigpipe.h"
 
 static const char* TEMPORARY_FILE_NAME = "temporary";
 static const char* OUT_FILE_NAME       = "out";

@@ -18,5 +18,3 @@ add_library(bpipe STATIC ${SRCS})
 
 add_executable(bigpipe main.c)
 target_link_libraries(bigpipe PUBLIC bpipe)
-
-# add_executable(uso-terminal uso-terminal.c)

@@ -51,8 +51,9 @@ struct pPipe {
     char* data; // intermediate buffer
     int fd_direct[2]; // array of r/w descriptors for "pipe()" call (for parent-->child direction)
     int fd_back[2]; // array of r/w descriptors for "pipe()" call (for child-->parent direction)
-    size_t len; // data length in intermediate buffer
     int pid;
+    size_t len; // data length in intermediate buffer
+    size_t data_size; // size of data to translate
     Ops actions;
 };  
 
@@ -81,6 +82,7 @@ Pipe *construct_pipe(size_t n) {
 
     CHECK_NOT_NULL_RET_NULL(new_pipe, NULL, NULL);
 
+    new_pipe->data_size = 0;
     new_pipe->len  = n;
     new_pipe->data = (char *) calloc(n, sizeof(char));
 
@@ -99,16 +101,22 @@ Pipe *construct_pipe(size_t n) {
 }
 
 void pipe_set_pid(Pipe *self, int pid) {
+    CHECK_NOT_NULL_ARG_VOID(self)
     self->pid = pid;
 
-    // if (pid > 0) {
-    //     close(self->fd_direct[0]);
-    //     close(self->fd_back[1]);
+    if (pid > 0) {
+        close(self->fd_direct[0]);
+        close(self->fd_back[1]);
 
-    // } else {
-    //     close(self->fd_direct[0]);
-    //     close(self->fd_back[1]);
-    // }
+    } else {
+        close(self->fd_direct[1]);
+        close(self->fd_back[0]);
+    }
+}
+
+void pipe_set_data_size(Pipe *self, size_t size) {
+    CHECK_NOT_NULL_ARG_VOID(self)
+    self->data_size = size;
 }
 
 size_t pipe_send_file(Pipe *self, int fd) {
@@ -121,7 +129,7 @@ size_t pipe_send_file(Pipe *self, int fd) {
         int shift = self->actions.send(self);
         bytes_sent += shift;
 
-        printf("bytes_sent: %ld\n", bytes_sent);
+        // printf("bytes_sent: %ld\n", bytes_sent);
 
         CHECK_TRUE_PRINT_ERROR(shift != char_read);
     }
@@ -138,17 +146,15 @@ size_t pipe_recieve_file(Pipe *self, int fd) {
     int char_write = 0;
     size_t bytes_recieved = 0;
 
-    // if (pid == 0) {
-    //     close(self->fd_direct[0]);
-    // } else {
-    //     close(self->fd_back[1]);
-    // }
-
     while ((char_read = self->actions.recieve(self)) > 0) {
         char_write = write(fd, self->data, char_read);
         bytes_recieved += char_read;
 
-        printf("bytes_recieved: %ld, char_read: %d\n", bytes_recieved, char_read);
+        if (bytes_recieved >= self->data_size) {
+            break;
+        }
+        
+        // printf("bytes_recieved: %ld, char_read: %d\n", bytes_recieved, char_read);
 
         CHECK_TRUE_PRINT_ERROR(char_read != char_write)
     }

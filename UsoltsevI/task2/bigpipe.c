@@ -3,20 +3,13 @@
 #include <unistd.h>
 #include "bigpipe.h"
 
-#define CHECK_NOT_NULL_RET_NULL(a, to_free1, to_free2)  \
-    if (a == NULL) {                            \
-        perror("null pointer");                 \
-        free(to_free1);                         \
-        free(to_free2);                         \
-        return NULL;                            \
-    }
-
-#define CHECK_NOT_NULL_ARG(a, to_return)        \
-    if (a == NULL) {                            \
-        fprintf(stderr,                         \
-                    "NULL argument in func %s\n"\
-                        , __func__);            \
-        return to_return;                       \
+#define CHECK_NOT_NULL(a, to_free1, to_free2, to_return)\
+    if (a == NULL) {                                    \
+        fprintf(stderr, "null pointer"                  \
+                "exception in func %s\n", __func__);    \
+        free(to_free1);                                 \
+        free(to_free2);                                 \
+        return to_return;                               \
     }
 
 #define CHECK_NOT_NULL_ARG_VOID(a)              \
@@ -24,7 +17,7 @@
         fprintf(stderr,                         \
                     "NULL argument in func %s\n"\
                         , __func__);            \
-        return;                       \
+        return;                                 \
     }
 
 #define CHECK_TRUE_PRINT_ERROR(a)       \
@@ -40,7 +33,6 @@
         return NULL;                        \
     }
 
-typedef struct op_table Ops;
 
 typedef struct op_table  {
     size_t (*recieve)(Pipe *self); 
@@ -57,8 +49,9 @@ struct pPipe {
     Ops actions;
 };  
 
+
 static size_t pipe_send_message(Pipe *self) {
-    CHECK_NOT_NULL_ARG(self, 0);
+    CHECK_NOT_NULL(self, NULL, NULL, 0);
 
     if (self->pid > 0) { // parent
         return write(self->fd_direct[1], self->data, self->len);
@@ -68,7 +61,7 @@ static size_t pipe_send_message(Pipe *self) {
 }
 
 static size_t pipe_recieve_message(Pipe *self) {
-    CHECK_NOT_NULL_ARG(self, 0);
+    CHECK_NOT_NULL(self, NULL, NULL, 0);
 
     if (self->pid > 0) { // parent
         return read(self->fd_back[0], self->data, self->len);
@@ -80,19 +73,19 @@ static size_t pipe_recieve_message(Pipe *self) {
 Pipe *construct_pipe(size_t n) {
     Pipe *new_pipe  = (Pipe *) calloc(1, sizeof(Pipe));
 
-    CHECK_NOT_NULL_RET_NULL(new_pipe, NULL, NULL);
+    CHECK_NOT_NULL(new_pipe, NULL, NULL, NULL);
 
     new_pipe->data_size = 0;
     new_pipe->len  = n;
     new_pipe->data = (char *) calloc(n, sizeof(char));
 
-    CHECK_NOT_NULL_RET_NULL(new_pipe->data, new_pipe, NULL);
+    CHECK_NOT_NULL(new_pipe->data, new_pipe, NULL, NULL);
 
     new_pipe->actions.recieve = pipe_recieve_message;
     new_pipe->actions.send    = pipe_send_message   ;
 
-    CHECK_NOT_NULL_RET_NULL(new_pipe->actions.recieve, new_pipe->data, new_pipe);
-    CHECK_NOT_NULL_RET_NULL(new_pipe->actions.send   , new_pipe->data, new_pipe);
+    CHECK_NOT_NULL(new_pipe->actions.recieve, new_pipe->data, new_pipe, NULL);
+    CHECK_NOT_NULL(new_pipe->actions.send   , new_pipe->data, new_pipe, NULL);
 
     SAFE_EXECUTE(pipe, new_pipe->fd_back  , new_pipe->data, new_pipe);
     SAFE_EXECUTE(pipe, new_pipe->fd_direct, new_pipe->data, new_pipe);
@@ -120,7 +113,7 @@ void pipe_set_data_size(Pipe *self, size_t size) {
 }
 
 size_t pipe_send_file(Pipe *self, int fd) {
-    CHECK_NOT_NULL_ARG(self, 0);
+    CHECK_NOT_NULL(self, NULL, NULL, 0);
 
     int char_read = 0;
     size_t bytes_sent = 0;
@@ -134,15 +127,15 @@ size_t pipe_send_file(Pipe *self, int fd) {
         CHECK_TRUE_PRINT_ERROR(shift != char_read);
     }
 
-    printf("SENDING IS FINISHED\n");
+    // printf("SENDING IS FINISHED\n");
 
     return bytes_sent;
 }
 
 size_t pipe_recieve_file(Pipe *self, int fd) {
-    CHECK_NOT_NULL_ARG(self, 0);
+    CHECK_NOT_NULL(self, NULL, NULL, 0);
 
-    int char_read = 0;
+    int char_read  = 0;
     int char_write = 0;
     size_t bytes_recieved = 0;
 
@@ -159,7 +152,7 @@ size_t pipe_recieve_file(Pipe *self, int fd) {
         CHECK_TRUE_PRINT_ERROR(char_read != char_write)
     }
 
-    printf("RECIEVING IS FINISHED\n");
+    // printf("RECIEVING IS FINISHED\n");
 
     return bytes_recieved;
 }
@@ -176,8 +169,7 @@ void delete_pipe(Pipe *del_pipe) {
     free(del_pipe);
 }
 
-#undef CHECK_NOT_NULL_RET_NULL
-#undef CHECK_NOT_NULL_ARG
+#undef CHECK_NOT_NULL
 #undef CHECK_NOT_NULL_ARG_VOID
 #undef CHECK_TRUE_PRINT_ERROR
 #undef SAFE_EXECUTE

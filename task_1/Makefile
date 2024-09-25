@@ -40,7 +40,6 @@ release : folder $(TARGET)
 debug : folder $(TARGET)
 	@echo "[Debug mode]"
 
-	
 $(BuildPrefix)%.o : $(SourcePrefix)%.c
 	@echo [CXX] -c $< -o $@
 	@$(CXX) $(CXXFLAGS) $(Include) -c $< -o $@

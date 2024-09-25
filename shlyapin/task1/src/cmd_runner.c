@@ -63,12 +63,14 @@ int run_cmd(const char *cmd_ptr) {
         free_parsed_cmd(args);
     }
 
+    int status;
     for (int i = 0; i < num_cmds; i++) {
-        int status;
         wait(&status);
     }
 
     free_parsed_cmd(cmds);
-
-    return 0;
+    
+    printf("EXIT_CODE: %d\n", status);
+    
+    return status;
 }

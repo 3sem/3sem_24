@@ -38,7 +38,8 @@ set_target_properties(dup_pipe PROPERTIES
 
 # Добавляем опции компиляции только для режима Debug
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_options(dup_pipe PRIVATE -Wall -Wextra -Wpedantic)
+    target_compile_options(dup_pipe PRIVATE -Wall -Wextra -Wpedantic -Wshadow -Wstrict-aliasing -Wconversion -Wthread-safety -Wdouble-promotion -fsanitize=thread,undefined -Watomic-alignment -Wunreachable-code -Wmissing-noreturn -Wimplicit-fallthrough)
+    target_link_options(dup_pipe PRIVATE -Wall -Wextra -Wpedantic -Wshadow -Wstrict-aliasing -Wconversion -Wthread-safety -Wdouble-promotion -fsanitize=thread,undefined -Watomic-alignment -Wunreachable-code -Wmissing-noreturn -Wimplicit-fallthrough)
 endif()
 
 

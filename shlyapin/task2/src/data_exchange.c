@@ -64,11 +64,11 @@ int forward_pipe_to_file(Pipe *pp, const char *fname) {
 
   ssize_t count = pp->actions.rcv(pp);
   while (count) {
-    if (count == -1) {
+    if (count < 0) {
       perror("Error write in file");
       break;
     }
-    write(fd, pp->data, count);
+    write(fd, pp->data, (size_t)count);
     count = pp->actions.rcv(pp);
   }
   
@@ -93,14 +93,14 @@ int forward_file_to_pipe(Pipe *pp, const char *fname) {
     exit(EXIT_FAILURE);
   }
 
-  int count = read(fd, pp->data, BUF_SIZE);
+  ssize_t count = read(fd, pp->data, BUF_SIZE);
   while (count) {
-    if (count == -1) {
+    if (count < 0) {
       perror("Error read from file");
       break;
     }
 
-    pp->len = count;
+    pp->len = (size_t)count;
     if (pp->actions.snd(pp) == -1) {
       perror("Error write in pipe");
       break;

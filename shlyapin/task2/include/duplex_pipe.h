@@ -17,5 +17,5 @@ struct pPipe {
         Ops actions;
 };
 
-Pipe *ctor_pipe();
+Pipe *ctor_pipe(void);
 int dtor_pipe(Pipe *pp);

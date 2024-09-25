@@ -9,8 +9,6 @@
 int     is_fd_open(int fd);
 ssize_t pipe_recieve(Pipe *pp);
 ssize_t pipe_send(Pipe *pp);
-Pipe   *ctor_pipe();
-int     dtor_pipe(Pipe *pp);
 
 int is_fd_open(int fd) {
   return fcntl(fd, F_GETFD) == (-1) ? 0 : 1;
@@ -28,7 +26,7 @@ ssize_t pipe_send(Pipe *pp) {
   return write(work_fd, pp->data, pp->len);
 }
 
-Pipe *ctor_pipe() {
+Pipe *ctor_pipe(void) {
   Pipe *pp = malloc(sizeof(Pipe));
   if (pp == NULL) {
     perror("Error malloc");

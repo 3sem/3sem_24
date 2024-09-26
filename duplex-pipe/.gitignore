@@ -4,3 +4,8 @@
 # Executables
 *.exe
 *.out
+*.o
+
+*.bd
+
+build

@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.16)
 
 project(Full_Duplex)
 
-file(GLOB SRC_FILES src/*.c)
-
-add_library(full_duplex STATIC ${SRC_FILES})
+add_library(full_duplex STATIC
+	src/full_duplex.c
+	src/big_data_tranfer.c)
 
 target_include_directories(full_duplex PUBLIC
     ./include/

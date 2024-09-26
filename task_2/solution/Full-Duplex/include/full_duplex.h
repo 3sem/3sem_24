@@ -12,22 +12,22 @@ typedef struct op_table Ops;
 
 typedef struct op_table
 {
-	ssize_t (*recieve)	(Pipe* self, bool is_parent, char* buf, size_t max_len);
-	ssize_t (*send)		(Pipe* self, bool is_parent, const char* msg, size_t msg_len);
+	ssize_t (*recieve)	(Pipe* self, bool is_parent);
+	ssize_t (*send)		(Pipe* self, bool is_parent);
 } Ops;
 
 typedef struct pPipe
 {
 	size_t len; // data length in intermediate buffer
-	char* data;
+	char* data; // intermediate buffer
 
 	int fd_direct[2];	// parent-->child
 	int fd_back[2];		// child-->parent
 
-	Ops actions;
+	Ops actions; // op-table set by user
 } Pipe;
 
-Pipe* pipe_ctor(const Ops* _ops, size_t _len);
+Pipe* pipe_ctor(const Ops* _ops);
 
 
 #endif //FULL_DUPLEX_PIPE_H

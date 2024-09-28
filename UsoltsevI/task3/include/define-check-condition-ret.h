@@ -5,7 +5,7 @@
 //
 //-----------------------------------------------------------------
 
-#define CHECK_CONDITION_RET(a, to_free1, to_free2, to_return)   \
+#define CHECK_CONDITION_FREE_RET(a, to_free1, to_free2, to_return)   \
     if (a) {                                    \
         fprintf(stderr                          \
                 , "%s in func %s in file %s\n"  \
@@ -15,9 +15,23 @@
         return to_return;                       \
     }
 
-#define CHECK_CONDITION_PRINT(a, message)       \
+#define CHECK_CONDITION_PRINT(a)                \
     if (a) {                                    \
         fprintf(stderr                          \
                 , "%s in funct %s in file %s\n" \
                 , #a, __func__, __FILE__);      \
+    }
+
+#define CHECK_CONDITION_PERROR_RET(a, message, to_return)   \
+    if (a) {                                    \
+        perror(message);                        \
+        return to_return;                       \
+    }
+
+#define CHECK_CONDITION_RET(a, to_return)       \
+    if (a) {                                    \
+        fprintf(stderr                          \
+                , "%s in func %s in file %s\n"  \
+                , #a, __func__, __FILE__);      \
+        return to_return;                       \
     }

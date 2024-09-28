@@ -38,7 +38,7 @@ static double measure_execution_time(int func(int, size_t)
     return (stop.tv_sec - start.tv_sec) + (stop.tv_nsec - start.tv_nsec) / (double) 1000000000;
 }
 
-static double measure_avarage_time(int func(int, size_t)
+static double measure_average_time(int func(int, size_t)
                                         , int arg1, size_t arg2) {
     double sum = 0.0;
 

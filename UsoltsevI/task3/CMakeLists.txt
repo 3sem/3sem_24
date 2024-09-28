@@ -1,6 +1,6 @@
 #---------------------------------------------------------------------
 #
-# Cmake build system for bigpipe
+# Cmake build system for file sharing speed comparison
 #
 #---------------------------------------------------------------------
 
@@ -8,13 +8,14 @@
 # VERBOSE=1 cmake --build ./build
 
 cmake_minimum_required(VERSION 3.11)
-project("bigpipe")
+project("filesharing")
 
-SET(SRCS
-    bigpipe.c
+SET(SOURCES
+    source/fifo.c
+    source/message-queues.c
+    source/shared-memory.c
+    source/str-to-size-t.c
+    main.c
 )
 
-add_library(bpipe STATIC ${SRCS})
-
-add_executable(bigpipe main.c)
-target_link_libraries(bigpipe PUBLIC bpipe)
+add_executable(filesharing ${SOURCES})

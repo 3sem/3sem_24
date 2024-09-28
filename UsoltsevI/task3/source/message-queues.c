@@ -10,15 +10,7 @@
 #include <sys/msg.h>
 #include <sys/types.h>
 #include "../include/message-queues.h"
-
-#define CHECK_CONDITION_RET(a, to_free1, to_free2, to_return)   \
-    if (a) {                                \
-        fprintf("%s in func %s in file %s"  \
-                , #a, __func__, __FILE__);  \
-        free(to_free1);                     \
-        free(to_free2);                     \
-        return to_return;                   \
-    }
+#include "../include/define-check-condition-ret.h"
 
 static const size_t MSG_BUF_SIZE = 1024;
 

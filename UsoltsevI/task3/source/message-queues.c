@@ -42,15 +42,15 @@ int msgq_translate_file(int fd, size_t file_size) {
     key_t key  = ftok(MSGQ_TEMP_FILE_NAME, 0);
     
     int msg_id = msgget(key, IPC_CREAT | 0666);
-    CHECK_CONDITION_PERROR_RET(msg_id == -1, "msgget failure", 1);
+    CHECK_CONDITION_PERROR_RET(msg_id == -1, "msgget", 1);
 
     pid_t pid = fork();
-    CHECK_CONDITION_PERROR_RET(pid < 0, "fork failure", 1);
+    CHECK_CONDITION_PERROR_RET(pid < 0, "fork", 1);
     
     if (pid > 0) {
         // int status;
         // wait(&status);
-        // CHECK_CONDITION_RET(status != 0, NULL, NULL, 1);
+        // CHECK_CONDITION_RET(status != 0, 1);
 
         msgbuf *buf = construct_msgbuf(1, MSGQ_BUF_SIZE);
 
@@ -64,6 +64,9 @@ int msgq_translate_file(int fd, size_t file_size) {
             }
         }
 
+        // int msgctl_res = msgctl(msg_id, IPC_RMID, NULL);
+        // CHECK_CONDITION_PERROR_RET(msgctl_res != 0, "msgctl", 1)
+
         delete_msgbuf(buf);
 
     } else {
@@ -74,7 +77,7 @@ int msgq_translate_file(int fd, size_t file_size) {
 
         while ((char_read = read(fd, buf->mtext, buf->bsize)) > 0) {
             int ret = msgsnd(msg_id, &buf, char_read, IPC_NOWAIT);
-            CHECK_CONDITION_RET(ret == 0, 1)
+            CHECK_CONDITION_PERROR_RET(ret != 0, "msgsnd", 1)
             char_sent += char_read;
             if (char_sent >= file_size) {
                 break;

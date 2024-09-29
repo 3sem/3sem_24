@@ -14,7 +14,6 @@ SET(SOURCES
     source/fifo.c
     source/message-queues.c
     source/shared-memory.c
-    source/str-to-size-t.c
     main.c
 )
 

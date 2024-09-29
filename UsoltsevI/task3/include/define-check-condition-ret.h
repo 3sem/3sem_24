@@ -28,6 +28,11 @@
         return to_return;                       \
     }
 
+#define CHECK_CONDITION_PERROR(a, message)      \
+    if (a) {                                    \
+        perror(message);                        \
+    }
+
 #define CHECK_CONDITION_RET(a, to_return)       \
     if (a) {                                    \
         fprintf(stderr                          \

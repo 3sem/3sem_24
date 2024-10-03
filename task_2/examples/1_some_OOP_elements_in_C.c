@@ -1,4 +1,5 @@
-/* Tiny example of function table usage as structure field -- implementation of incapsulation and polymorphism
+/* Tiny example of function table usage as structure field
+-- implementation of incapsulation and polymorphism
 OOP principles in clearly procedural languages (like C). Oftenly used in system programming */
 
 #include <stdio.h>
@@ -12,7 +13,7 @@ typedef struct pString String;
 typedef struct op_table Ops;
 
 typedef struct op_table  {
-    int (*len)(String *self); // "op_table" usually named in file systems; 
+    int (*len)(String *self); // "op_table" usually named in file systems;
                               // "priv" usually named in some drivers (like USB)
 } Ops;
 

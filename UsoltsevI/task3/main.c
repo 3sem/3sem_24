@@ -77,10 +77,9 @@ int main(int argc, char *argv[]) {
     size_t file_size = get_file_size(argv[1]);
 
     double fifo_res = measure_average_time(fifo_translate_file, argv[1], file_size);
-    double msgq_res = measure_average_time(msgq_translate_file, argv[1], file_size);
     printf("fifo_res: %lf\n", fifo_res);
+    double msgq_res = measure_average_time(msgq_translate_file, argv[1], file_size);
     printf("msgq_res: %lf\n", msgq_res);
-
     double smem_res = measure_average_time(smem_translate_file, argv[1], file_size);
     printf("smem_res: %lf\n", smem_res);
 

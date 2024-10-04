@@ -11,8 +11,9 @@
 #include <sys/types.h>
 #include "../include/fifo.h"
 #include "../include/define-check-condition-ret.h"
+#include "../include/buf-size.h"
 
-static const size_t FIFO_BUF_SIZE = 1024;
+static const size_t FIFO_BUF_SIZE = FILESENDING_BUF_SIZE;
 
 int fifo_translate_file(int fd, size_t file_size) {
     int pipefd[2];

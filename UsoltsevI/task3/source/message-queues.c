@@ -12,8 +12,9 @@
 #include <sys/types.h>
 #include "../include/message-queues.h"
 #include "../include/define-check-condition-ret.h"
+#include "../include/buf-size.h"
 
-static const size_t MSGQ_BUF_SIZE       = 1024;
+static const size_t MSGQ_BUF_SIZE       = FILESENDING_BUF_SIZE;
 static const char*  MSGQ_TEMP_FILE_NAME = "/msgq";
 
 typedef struct msgbuf {

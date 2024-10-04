@@ -18,8 +18,9 @@
 #include <sys/types.h>
 #include "../include/shared-memory.h"
 #include "../include/define-check-condition-ret.h"
+#include "../include/buf-size.h"
 
-static const size_t SMEM_SIZE           = 1024;
+static const size_t SMEM_SIZE           = FILESENDING_BUF_SIZE;
 static const size_t SMEM_NUM_PARTS      = 4;
 static const char*  SMEM_TEMP_FILE_NAME = "/smem";
 
@@ -128,10 +129,10 @@ int smem_translate_file(int fd, size_t file_size) {
     int smem_fd = shm_open(SMEM_TEMP_FILE_NAME, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     CHECK_CONDITION_PERROR_RET(smem_fd == -1, "shm_open", 1)
 
-    int  ftruncate_res = ftruncate(smem_fd, SMEM_SIZE);
+    int  ftruncate_res = ftruncate(smem_fd, SMEM_SIZE * SMEM_NUM_PARTS);
     CHECK_CONDITION_PERROR_RET(ftruncate_res == -1, "ftruncate", 1)
 
-    void *smem = mmap(NULL, SMEM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, smem_fd, 0);
+    void *smem = mmap(NULL, SMEM_SIZE * SMEM_NUM_PARTS, PROT_READ | PROT_WRITE, MAP_SHARED, smem_fd, 0);
     CHECK_CONDITION_PERROR_RET(smem == NULL, "mmap", 1)
 
     pthread_mutex_t mutex;

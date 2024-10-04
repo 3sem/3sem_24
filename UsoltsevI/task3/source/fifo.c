@@ -48,7 +48,11 @@ int fifo_translate_file(int fd, size_t file_size) {
         close(pipefd[0]);
         
         char *buf = (char *) calloc(FIFO_BUF_SIZE, sizeof(char));
-        CHECK_CONDITION_PERROR_RET(buf == NULL, "calloc", 1);
+        
+        if (buf == NULL) {
+            perror("calloc");
+            exit(1);
+        }
 
         size_t char_read = 0;
         size_t char_sent = 0;

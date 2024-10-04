@@ -28,6 +28,12 @@
         return to_return;                       \
     }
 
+#define CHECK_CONDITION_PERROR_ACT(a, message, action)   \
+    if (a) {                                    \
+        perror(message);                        \
+        ##action;                               \
+    }
+
 #define CHECK_CONDITION_PERROR(a, message)      \
     if (a) {                                    \
         perror(message);                        \

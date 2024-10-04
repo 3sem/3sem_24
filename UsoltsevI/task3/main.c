@@ -6,12 +6,12 @@
 //
 // The main function accepts the file name as input.
 //
-// Additionally, it writes the results to the stdout.
+// Additionally, it writes the test results to the stdout.
 // 
 //-----------------------------------------------------------------
 //
 // Usage example:
-// ./build/filesharing 4294967296 fourgb
+// ./build/filesharing fourgb
 // 
 //-----------------------------------------------------------------
 
@@ -70,7 +70,7 @@ static size_t get_file_size(const char *file_name) {
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        fprintf(stderr, "argc < ! Look at the instructions for use!\n");
+        fprintf(stderr, "argc < 2! Look at the instructions for use!\n");
         return -1;
     }
 
@@ -78,11 +78,11 @@ int main(int argc, char *argv[]) {
 
     double fifo_res = measure_average_time(fifo_translate_file, argv[1], file_size);
     double msgq_res = measure_average_time(msgq_translate_file, argv[1], file_size);
-    // double smem_res = measure_average_time(smem_translate_file, argv[1], file_size);
-
     printf("fifo_res: %lf\n", fifo_res);
     printf("msgq_res: %lf\n", msgq_res);
-    // printf("smem_res: %lf\n", smem_res);
+
+    double smem_res = measure_average_time(smem_translate_file, argv[1], file_size);
+    printf("smem_res: %lf\n", smem_res);
 
     return 0;
 }

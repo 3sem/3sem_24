@@ -14,7 +14,11 @@
 #include "../include/define-check-condition-ret.h"
 #include "../include/buf-size.h"
 
-static const size_t MSGQ_BUF_SIZE       = FILESENDING_BUF_SIZE;
+#if FILESENDING_BUF_SIZE < 8192
+    static const size_t MSGQ_BUF_SIZE       = FILESENDING_BUF_SIZE;
+#else 
+    static const size_t MSGQ_BUF_SIZE       = 8192;
+#endif
 static const char*  MSGQ_TEMP_FILE_NAME = "/msgq";
 
 typedef struct msgbuf {
@@ -77,6 +81,11 @@ int msgq_translate_file(int fd, size_t file_size) {
 
     } else {
         msgbuf_t *buf = construct_msgbuf(1, MSGQ_BUF_SIZE);
+
+        if (buf == NULL) {
+            fprintf(stderr, "construct_msgbuf");
+            exit(1);
+        }
 
         size_t char_read = 0;
         size_t char_sent = 0;

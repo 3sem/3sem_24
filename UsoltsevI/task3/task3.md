@@ -25,9 +25,9 @@ Usage example:
 ## Test results
 The measurements were taken on my laptop. 
 
-In these places, a 1 GB file was transferred from parent to child in various ways. The operation is repeated 10 times in a cycle and its average value is output.
+In these places, a 1 GB file was transferred from child to parent in various ways. The operation is repeated 10 times in a cycle and its average value is output.
 
-The maximum size of the message queue buffer is 8192 bytes. The pipe size is two pages, 16384 bytes.
+The maximum size of the message queue buffer is 8192 bytes. The pipe size is four pages, 16384 bytes.
 
 ![Results](resources/Chart.png)
 

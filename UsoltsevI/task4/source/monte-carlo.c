@@ -85,9 +85,10 @@ double concurrent_monte_carlo(double func(double x)
     pthread_t *threads = (pthread_t *) calloc(num_threads, sizeof(pthread_t));
 
     double step = (end - srt) / num_threads;
+    size_t num_points_per_area = num_points / num_threads;
 
     for (int i = 0; i < num_threads; ++i) {
-        struct monte_carlo_args *args = args_create(func, srt + step * i, end - step * (num_threads - i - 1), min, max, num_points);
+        struct monte_carlo_args *args = args_create(func, srt + step * i, end - step * (num_threads - i - 1), min, max, num_points_per_area);
         pthread_create(&threads[i], NULL, monte_carlo, args);
     }
 

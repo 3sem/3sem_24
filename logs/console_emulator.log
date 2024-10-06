@@ -1,28 +1,28 @@
-[484401]> starting string parsing
-[487505]> getting number of pipes:
-[487810]> pipe number is: 0
-[488728]> total number of pipes is: 1
-[488811]> parsing pipes:
-[494195]> parsing command:
-[494609]> parsing argument: 
-[495013]> current position is <2>, the rest of the string is < -l
+[302255]> starting string parsing
+[305880]> getting number of pipes:
+[306164]> pipe number is: 0
+[306914]> total number of pipes is: 1
+[306994]> parsing pipes:
+[313992]> parsing command:
+[314335]> parsing argument: 
+[314566]> current position is <2>, the rest of the string is < -l
 > 
-[495133]> number of symbols scanned is: <2>, the argument scanned is: <ls>
-[495463]> parsing argument: 
-[495487]> current position is <5>, the rest of the string is <
+[314658]> number of symbols scanned is: <2>, the argument scanned is: <ls>
+[314930]> parsing argument: 
+[314950]> current position is <5>, the rest of the string is <
 > 
-[495501]> number of symbols scanned is: <2>, the argument scanned is: <-l>
-[495516]> parsing argument: 
-[496340]> command parsed
-[496420]> scanned command arguments are:
-[496558]> 0) ls
-[496625]> 1) -l
-[497036]> executing pipes:
-[497365]> pipe created
-[497464]> Descriptors:
+[314961]> number of symbols scanned is: <2>, the argument scanned is: <-l>
+[314973]> parsing argument: 
+[315635]> command parsed
+[315704]> scanned command arguments are:
+[315822]> 0) ls
+[315873]> 1) -l
+[316207]> executing pipes:
+[316398]> pipe created
+[316484]> Descriptors:
 1) 4
 2) 5
 
-[497562]> Input fds 0
+[316556]> Input fds 0
 
-[504651]> closing logfile
+[324417]> closing logfile

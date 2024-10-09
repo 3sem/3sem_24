@@ -18,7 +18,15 @@ int main(){
         char*** cmd_data = parse_buffer(buf);
         run_cmd(cmd_data);
 
+        int status;
+        for (int i = 0; i < count_symbol(buf, "|"); i++){
+            wait(&status);
+        }
+
+        printf("Exit code: %d\n", status);
+        
         free_cmd(cmd_data, buf);
+
     }
 
 

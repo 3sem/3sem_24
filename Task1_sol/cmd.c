@@ -29,13 +29,18 @@ void run_cmd(char*** cmd){
             }
             close(fds[0]);
             execvp(cmd[i][0], cmd[i]);
+            printf("Wrong command\n");
             exit(1);
         }
         else { 
-            waitpid(pid, NULL, 0);
+            int status;
+            waitpid(pid, &status, 0);
+            //printf("exit code: %d\n", status);
+
             if (i>0) close(fd_in);
             close(fds[1]);
             fd_in = fds[0];
+            
             i++;
         }
     }

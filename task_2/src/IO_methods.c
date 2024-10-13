@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -10,7 +9,7 @@
 #include "IO_settings.h"
 
 size_t send_data_to_child(Pipe* self) {
-    assert(self);
+    if (!self) return -1;
 
     File file = create_file(PARENT_TO_CHILD);
 
@@ -35,7 +34,7 @@ size_t send_data_to_child(Pipe* self) {
 }
 
 size_t send_data_to_parent(Pipe* self) {
-    assert(self);
+    if (!self) return -1;
 
     File file = create_file(CHILD_TO_PARENT);
 
@@ -60,7 +59,7 @@ size_t send_data_to_parent(Pipe* self) {
 }
 
 size_t receive_data_from_parent(Pipe* self) {
-    assert(self);
+    if (!self) return -1;
 
     File receive_file = create_file(CHILD_RECEIVED_FILE);
 
@@ -85,7 +84,7 @@ size_t receive_data_from_parent(Pipe* self) {
 }  
 
 size_t receive_data_from_child(Pipe* self) {
-    assert(self);
+    if (!self) return -1;
 
     File receive_file = create_file(PARENT_RECEIVED_FILE);
 
@@ -110,11 +109,12 @@ size_t receive_data_from_child(Pipe* self) {
 } 
 
 File create_file(const char* filename) {
-    assert(filename);
-
     File file = {};
+
+    if (!filename) return file;
+
     file.file_d = open(filename, O_CREAT | O_RDWR | __O_CLOEXEC, S_IRWXU);
-    assert(file.file_d != -1);
+    if (file.file_d == -1) return file;
 
     struct stat file_stat = {};
     fstat(file.file_d, &file_stat);
@@ -125,7 +125,7 @@ File create_file(const char* filename) {
 }
 
 int delete_file(File* file) {
-    assert(file);
+    if (!file) return -1;
 
     close(file->file_d);
     file->size = 0;

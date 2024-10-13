@@ -9,7 +9,6 @@
 #include "IO_methods.h"
 
 int main() {
-    
     Pipe full_pipe = {};
 
     if(duplex_pipe_ctor(&full_pipe)) printf("Pipe ctor error\n");

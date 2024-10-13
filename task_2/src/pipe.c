@@ -1,12 +1,11 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <assert.h>
 
 #include "pipe.h"
 
 int duplex_pipe_ctor(Pipe* self) {
-    assert(self);
+    if (!self) return -1;
 
     self->buffer = buffer_ctor(DEFAULT_INTERMIDIATE_BUFFER_SIZE);
 
@@ -17,7 +16,7 @@ int duplex_pipe_ctor(Pipe* self) {
 }
 
 int duplex_pipe_dtor(Pipe* self) {
-    assert(self);
+    if (!self) return -1;
 
     buffer_dtor(&(self->buffer));
 
@@ -33,7 +32,6 @@ Buffer buffer_ctor(size_t capacity) {
     Buffer buffer = {};
 
     buffer.data = (char*) calloc(capacity + 1, sizeof(char));
-    assert(buffer.data);
 
     buffer.size = 0;
     buffer.capacity = capacity;
@@ -42,6 +40,8 @@ Buffer buffer_ctor(size_t capacity) {
 }
 
 int buffer_dtor(Buffer* buffer) {
+    if (!buffer) return -1;
+
     free(buffer->data);
 
     buffer->size = 0;

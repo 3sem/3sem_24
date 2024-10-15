@@ -1,0 +1,6 @@
+[requires]
+mbedtls/3.6.1
+
+[generators]
+CMakeDeps
+CMakeToolchain

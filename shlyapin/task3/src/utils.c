@@ -6,46 +6,53 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
-#include <openssl/md5.h>
+#include <mbedtls/md5.h>
 
 #include "config.h"
 #include "utils.h"
 
-#define MD5_BUFFER_SIZE 1024
+#define MD5_DIGEST_LENGTH 16
 
+int compute_md5(const char *filepath, unsigned char output[MD5_DIGEST_LENGTH]);
 int compare_files_md5(const char *file1, const char *file2);
-void calculate_md5(const char *filename, unsigned char *md5_hash);
 
-void calculate_md5(const char *filename, unsigned char *md5_hash) {
-    MD5_CTX md5_ctx;
-    MD5_Init(&md5_ctx);
-
-    FILE *file = fopen(filename, "rb");
-    if (!file) {
-        perror("Error opening file");
-        exit(EXIT_FAILURE);
-    }
-
-    unsigned char buffer[MD5_BUFFER_SIZE];
+int compute_md5(const char *filepath, unsigned char output[MD5_DIGEST_LENGTH]) {
+    mbedtls_md5_context ctx;
+    unsigned char buffer[1024];
     size_t bytes_read;
+    FILE *file = fopen(filepath, "rb");
 
-    while ((bytes_read = fread(buffer, 1, MD5_BUFFER_SIZE, file)) != 0) {
-        MD5_Update(&md5_ctx, buffer, bytes_read);
+    if (!file) {
+        perror("Failed to open file");
+        return -1;
     }
 
-    MD5_Final(md5_hash, &md5_ctx);
+    mbedtls_md5_init(&ctx);
+    mbedtls_md5_starts(&ctx);
+
+    while ((bytes_read = fread(buffer, 1, sizeof(buffer), file)) > 0) {
+        mbedtls_md5_update(&ctx, buffer, bytes_read);
+    }
+
+    mbedtls_md5_finish(&ctx, output);
+    mbedtls_md5_free(&ctx);
     fclose(file);
+    return 0;
 }
 
-// Функция для сравнения MD5-хэшей двух файлов
 int compare_files_md5(const char *file1, const char *file2) {
-    unsigned char md5_hash1[MD5_DIGEST_LENGTH];
-    unsigned char md5_hash2[MD5_DIGEST_LENGTH];
+    unsigned char md5_1[MD5_DIGEST_LENGTH];
+    unsigned char md5_2[MD5_DIGEST_LENGTH];
 
-    calculate_md5(file1, md5_hash1);
-    calculate_md5(file2, md5_hash2);
+    if (compute_md5(file1, md5_1) != 0) {
+        return -1; // Error computing md5 for file1
+    }
 
-    return memcmp(md5_hash1, md5_hash2, MD5_DIGEST_LENGTH) == 0;
+    if (compute_md5(file2, md5_2) != 0) {
+        return -1; // Error computing md5 for file2
+    }
+
+    return memcmp(md5_1, md5_2, MD5_DIGEST_LENGTH) == 0 ? 1 : 0; // 1 if equal, 0 if not equal
 }
 
 void computeTimeExchangeData(int(*exchangeData)(int, int)) {

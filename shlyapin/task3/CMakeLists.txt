@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.14)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
 
 project(InterprocessCommunication VERSION 1.0.0)
 
@@ -27,5 +27,5 @@ set_target_properties(interprocess_communication PROPERTIES
     DEBUG_POSTFIX _debug
 )
 
-find_package(OpenSSL REQUIRED)
-target_link_libraries(interprocess_communication PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+find_package(MbedTLS REQUIRED)
+target_link_libraries(interprocess_communication PRIVATE MbedTLS::mbedx509 MbedTLS::mbedcrypto MbedTLS::mbedtls)

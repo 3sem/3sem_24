@@ -27,7 +27,7 @@ cd MIPT-CompTech-2ndCourse/task3
 time dd if=/dev/urandom of=image/input.txt bs=1048576 count=512
 ```
 
-4) Для сборки проекта нам необходима утилита CMake и библиотека openssl
+4) Для сборки проекта нам необходима утилита CMake и библиотека MbedTLS(можно установить c помощью conan)
 ```
 cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
 ```

@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <assert.h>
+#include <malloc.h>
 
 #include "config.h"
 #include "fifo.h"
@@ -28,7 +29,7 @@ int exchangeFifo(int fd_read, int fd_write) {
             exit(EXIT_FAILURE);
         }
         
-        char buf[BUF_SIZE];
+        char *buf = malloc(BUF_SIZE);
 
         for (ssize_t len_msg = -1; len_msg != 0; ) {
             len_msg = read(fd_fifo_rd, buf, BUF_SIZE);
@@ -55,7 +56,7 @@ int exchangeFifo(int fd_read, int fd_write) {
             exit(EXIT_FAILURE);
         }
 
-        char buf[BUF_SIZE];
+        char *buf = malloc(BUF_SIZE);
 
         for (int len_msg = -1; len_msg != 0; ) {
             len_msg = read(fd_read, buf, BUF_SIZE);

@@ -74,6 +74,10 @@ void computeTimeExchangeData(int(*exchangeData)(int, int)) {
         clock_gettime(CLOCK_MONOTONIC, &start);
         int result = exchangeData(fd_read, fd_write);
         clock_gettime(CLOCK_MONOTONIC, &end);
+        if (result != EXIT_SUCCESS) {
+            perror("Error exchange data");
+            exit(EXIT_FAILURE);
+        }
 
         elapsed_time += (end.tv_sec - start.tv_sec) * 1e9 + (end.tv_nsec - start.tv_nsec);
         
@@ -81,7 +85,7 @@ void computeTimeExchangeData(int(*exchangeData)(int, int)) {
         close(fd_write);
 
         if (compare_files_md5(TEST_FILE_INPUT, TEST_FILE_OUTPUT) == 0) {
-            printf("Error exchange data\n");
+            printf("Error check md5sum files\n");
             exit(EXIT_FAILURE);            
         }
     }

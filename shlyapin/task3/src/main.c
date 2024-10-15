@@ -3,9 +3,11 @@
 #include "fifo.h"
 #include "utils.h"
 
-int main(int argc, char* argv[]) {
+int main(void) {
     computeTimeExchangeData(exchangeSharedMemory);
+    
     computeTimeExchangeData(exchangeMessageQueue);
+
     computeTimeExchangeData(exchangeFifo);
 
     return 0;

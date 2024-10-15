@@ -1,8 +1,8 @@
 #pragma once
 
-#define BUF_SIZE (1024*4)
+#define BUF_SIZE (1024*8)
 
-#define NUM_ITERATIONS 10
+#define NUM_ITERATIONS 5
 
 #define FIFO_NAME "myfifo"
 

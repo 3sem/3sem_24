@@ -21,6 +21,14 @@ add_executable(interprocess_communication ${SOURCES})
 
 target_include_directories(interprocess_communication PUBLIC ${PROJECT_INCLUDE_DIRS})
 
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    # target_compile_options(interprocess_communication PRIVATE -g -O0 -Wall -Wextra -Wpedantic -fsanitize=address)
+    # target_link_options   (interprocess_communication PRIVATE -g -O0 -Wall -Wextra -Wpedantic -fsanitize=address)
+
+    target_compile_options(interprocess_communication PRIVATE -g -O0 -Wall -Wextra -Wpedantic -fsanitize=thread,undefined)
+    target_link_options   (interprocess_communication PRIVATE -g -O0 -Wall -Wextra -Wpedantic -fsanitize=thread,undefined)
+endif()
+
 set_target_properties(interprocess_communication PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin
     OUTPUT_NAME interprocess_communication

@@ -13,8 +13,6 @@ void run_cmd(char*** cmd){
     int i = 0;
     while (cmd[i]!= NULL) {
         pipe(fds);
-        //printf("New file descriptions: %d %d\n", fds[0], fds[1]);
-        //printf("input fds %d\n", fd_in);
         
         if ((pid = fork()) == -1) {
             perror("process creating");
@@ -35,7 +33,6 @@ void run_cmd(char*** cmd){
         else { 
             int status;
             waitpid(pid, &status, 0);
-            //printf("exit code: %d\n", status);
 
             if (i>0) close(fd_in);
             close(fds[1]);

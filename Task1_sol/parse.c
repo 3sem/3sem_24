@@ -32,7 +32,6 @@ char*** parse_buffer(char* buf){
 
     while (cnt < cmd_counter){                                      //теперь токенизируем каждый эдемент двумерного массива и заполняем таким образом трехмерный
         args_num = count_args(cmd_data[cnt]);
-        //printf("args num: %d\n", args_num);
         
         arg_data[cnt] = (char**)calloc(args_num + 1, sizeof(char*));
         istr = strtok(cmd_data[cnt], arg_sep);

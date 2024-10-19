@@ -4,12 +4,15 @@
 #include <fcntl.h>
 #include "channel.h"
 
-#define FIRST_FILE_IN_PARENT        "./file_to_send.txt"
-#define SECOND_FILE_IN_PARENT       "./file_from_child.txt"
-#define FILE_IN_CHILD               "./recieved_file.txt"
-
-int main()
+int main(int argc, char const *argv[])
 {
+    RETURN_ERROR_ON_TRUE(argc != 4, 11, 
+        printf("\033[1;31m> Please enter 3 file names: file to send, file to recieve in child and file to recieve in parent\033[0m\n"););
+
+    char const *first_file_in_p      = argv[1];
+    char const *second_file_in_p     = argv[2];
+    char const *file_in_c            = argv[3];
+
     channel_t *channel = constructor();
     if (!channel)
         return 111;
@@ -25,12 +28,12 @@ int main()
     {
         channel->actions.init_parent_channel(channel);
 
-        int first_file_in_parent = open(FIRST_FILE_IN_PARENT, O_RDONLY);
+        int first_file_in_parent = open(first_file_in_p, O_RDONLY);
         RETURN_ERROR_ON_TRUE(first_file_in_parent == -1, -1, perror("first file open err\n"); destructor(channel););
 
         channel->actions.send(channel, first_file_in_parent);
 
-        int second_file_in_parent = open(SECOND_FILE_IN_PARENT, O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
+        int second_file_in_parent = open(second_file_in_p, O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
         RETURN_ERROR_ON_TRUE(second_file_in_parent == -1, -1, perror("second file open err\n"); destructor(channel););
 
         channel->actions.recieve(channel, second_file_in_parent);
@@ -45,7 +48,7 @@ int main()
     {
         channel->actions.init_child_channel(channel);
 
-        int file_in_child = open(FILE_IN_CHILD, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
+        int file_in_child = open(file_in_c, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
         RETURN_ERROR_ON_TRUE(file_in_child == -1, -1, perror("child file open err\n"); destructor(channel););
 
         channel->actions.recieve(channel, file_in_child);

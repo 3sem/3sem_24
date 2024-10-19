@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "pipe.h"
 
@@ -32,6 +33,7 @@ Buffer buffer_ctor(size_t capacity) {
     Buffer buffer = {};
 
     buffer.data = (char*) calloc(capacity + 1, sizeof(char));
+    assert(buffer.data);
 
     buffer.size = 0;
     buffer.capacity = capacity;

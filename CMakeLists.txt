@@ -21,4 +21,6 @@ include_directories(
 
 add_subdirectory(task_1 ${CMAKE_CURRENT_BINARY_DIR}/task_1)
 add_subdirectory(task_2 ${CMAKE_CURRENT_BINARY_DIR}/task_2)
+add_subdirectory(task_3 ${CMAKE_CURRENT_BINARY_DIR}/task_3)
+add_subdirectory(task_4 ${CMAKE_CURRENT_BINARY_DIR}/task_4)
 add_subdirectory(logging ${CMAKE_CURRENT_BINARY_DIR}/logging)

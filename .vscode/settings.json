@@ -4,6 +4,9 @@
         "cmd_parsing.h": "c",
         "types.h": "c",
         "run_pipe.h": "c",
-        "parser.h": "c"
+        "parser.h": "c",
+        "mq_func.h": "c",
+        "common_func.h": "c",
+        "msg.h": "c"
     }
 }

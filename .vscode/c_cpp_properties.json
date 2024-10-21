@@ -4,7 +4,10 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/logging/src"
+                "${workspaceFolder}/logging/src",
+                "${workspaceFolder}/task_3/common",
+                "${workspaceFolder}/task_3/shared_memory_src/include",
+                "${workspaceFolder}/task_4/src/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

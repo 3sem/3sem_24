@@ -7,7 +7,8 @@
                 "${workspaceFolder}/logging/src",
                 "${workspaceFolder}/task_3/common",
                 "${workspaceFolder}/task_3/shared_memory_src/include",
-                "${workspaceFolder}/task_4/src/include"
+                "${workspaceFolder}/task_4/src/include",
+                "${workspaceFolder}/task_3/named_pipe_src/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

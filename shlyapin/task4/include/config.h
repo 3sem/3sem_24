@@ -1,5 +1,8 @@
 #pragma once
 
-#define N_STREAMS 4
 
-#define N_POINTS 1000000
+#define EPS 0.1
+
+#define MY_NSTREAMS 4
+
+#define MY_NPOINTS 100000

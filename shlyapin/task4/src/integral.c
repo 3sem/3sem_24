@@ -32,13 +32,34 @@ enum error_codes {
     ERROR_SEM_INIT = 13
 };
 
+key_t generate_unique_key(void);
 int initSharedMemory(SharedMemoryConfig *config);
 ssize_t scatterPointsMonteCarlo(double left, double right, double *height, double (*f)(double), size_t npoints);
 void computeDefiniteIntegralOnStreams(double a, double b, double (*f)(double), SharedData *data, int nstreams);
 
 
+
+key_t generate_unique_key(void) {
+    char temp_filename[] = "/tmp/somefileXXXXXX";
+    int fd = mkstemp(temp_filename);
+    if (fd == -1) {
+        perror("Error creating temp file");
+        return -1;
+    }
+
+    key_t key = ftok(temp_filename, 'a');
+    close(fd);
+    unlink(temp_filename);
+    return key;
+}
+
 int initSharedMemory(SharedMemoryConfig *config) {
-    config->shmid = shmget(rand(), sizeof(SharedData), 0666 | IPC_CREAT);
+    key_t key = generate_unique_key();
+    if (key < 0) {
+        perror("Error ftok");
+    }
+
+    config->shmid = shmget(key, sizeof(SharedData), 0666 | IPC_CREAT);
     if (config->shmid < 0) {
         perror("Error shmget");
         return ERROR_SHMGET;
@@ -65,6 +86,8 @@ ssize_t scatterPointsMonteCarlo(double left, double right, double *height, doubl
     size_t num_pos_points = 0;
     size_t num_neg_points = 0;
 
+    unsigned int seed = (unsigned int)time(NULL);
+
     int id = 0;
     do {
         if (id == 0) {
@@ -76,7 +99,6 @@ ssize_t scatterPointsMonteCarlo(double left, double right, double *height, doubl
         num_pos_points = 0;
         num_neg_points = 0;
 
-        unsigned int seed = (unsigned int)time(NULL);
         for (size_t j = 0; j < npoints / 2; ++j) {
             double x = left + ((right - left) / RAND_MAX) * rand_r(&seed); // Случайное число от left до right
             double y = (*height / RAND_MAX) * rand_r(&seed); // Случайное число от 0 до height
@@ -110,10 +132,10 @@ void computeDefiniteIntegralOnStreams(double a, double b, double (*f)(double), S
             double right = left + step;
             double top   = 1;
 
-            ssize_t sub_npoints = scatterPointsMonteCarlo(left, right, &top, f, (size_t)(N_POINTS / nstreams));
+            ssize_t sub_npoints = scatterPointsMonteCarlo(left, right, &top, f, (size_t)(MY_NPOINTS / nstreams));
 
             sem_wait(&data->sem_lock);
-            data->sum += (2*top*step / ((double)N_POINTS / nstreams)) * (double)(sub_npoints);
+            data->sum += (2*top*step / ((double)MY_NPOINTS / nstreams)) * (double)(sub_npoints);
             sem_post(&data->sem_lock);
             
             shmdt(data);
@@ -132,7 +154,9 @@ void computeDefiniteIntegralOnStreams(double a, double b, double (*f)(double), S
             exit(EXIT_FAILURE);
         }
     }
-    
+
+    free(pids_child);
+
     exit(EXIT_SUCCESS);
 }
 
@@ -166,7 +190,7 @@ double computeDefiniteIntegral(double a, double b, double (*f)(double)) {
         
         return res;
     } else if (pid == 0) {
-        computeDefiniteIntegralOnStreams(a, b, f, config.data, N_STREAMS);
+        computeDefiniteIntegralOnStreams(a, b, f, config.data, MY_NSTREAMS);
     } else {
         perror("Error fork process");
         exit(EXIT_FAILURE);
@@ -212,5 +236,3 @@ double testComputeDefiniteIntegral(double a, double b, double (*f)(double), int 
 
     return NAN;
 }
-
-

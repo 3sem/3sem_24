@@ -39,5 +39,5 @@ cmake --build build
 
 1) Для запуска 
 ```
-./bin/integral
+./bin/compute_integral
 ```

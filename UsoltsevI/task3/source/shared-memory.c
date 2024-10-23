@@ -19,10 +19,10 @@
 #include "../include/shared-memory.h"
 #include "../include/define-check-condition-ret.h"
 #include "../include/buf-size.h"
+#include "../config/config.h"
 
 static const size_t SMEM_SIZE           = FILESENDING_BUF_SIZE;
 static const size_t SMEM_NUM_PARTS      = 4;
-static const char*  SMEM_TEMP_FILE_NAME = "/smem";
 
 static struct smem_args {
     int fd;
@@ -52,6 +52,9 @@ static void *smem_recv(void *v_args) {
     size_t char_rcvd = 0;
     size_t add = 0;
 
+    int fd = open(SMEM_RCVD_FILE_NAME, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+    CHECK_CONDITION_PERROR_RET(fd == -1, "open", NULL);
+
     while (1) {
         pthread_mutex_lock(&args->mutex);
         if (args->num == 0) {
@@ -59,6 +62,9 @@ static void *smem_recv(void *v_args) {
         }
 
         memcpy(buf, args->smem + SMEM_SIZE * add, SMEM_SIZE);
+
+        size_t char_write = write(fd, buf, SMEM_SIZE);
+        CHECK_CONDITION_PRINT(char_write != SMEM_SIZE);
 
         add = (add + 1) % SMEM_NUM_PARTS;
         args->num -= 1;
@@ -85,6 +91,8 @@ static void *smem_recv(void *v_args) {
     if (char_rcvd >= args->file_size) {
         *result = 0;
     }
+
+    close(fd);
 
     return result;
 }

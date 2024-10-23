@@ -6,6 +6,8 @@ There are three methods for comparison:
 * Using message queues
 * Using shared memory
 
+All names of temporary files specified in [config/config.h](./config/config.h). To check if the file was shared correctly just compare "fifo_rcvd","msgq_rcvd" and "smem_rcvd" files with source file. All temporary files are removed by program. RCVD (recieved) files are not temporary but every time the program shares files it rewrites the files.
+
 ## Author
 Усолцьев Иван Алексеевич, студент 2-го гурса ФРКТ МФТИ, группа Б01-307.
 

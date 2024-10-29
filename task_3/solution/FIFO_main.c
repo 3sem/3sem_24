@@ -31,10 +31,11 @@ int main()
         return -1;
     }
 
-	clock_t proc_time = clock();
 
     if (pid)
 	{
+		clock_t proc_time = clock();
+
         Buffer buffer = {};
         alloc_buf(&buffer, LARGE_BUFFER_SIZE);
 

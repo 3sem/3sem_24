@@ -24,7 +24,7 @@ ssize_t send(Pipe* self, bool is_parent)
 	return write_amount;
 }
 
-int main()
+int main(int argc, char** argv)
 {
 	Ops op_table = {recieve, send};
 	fprintf(stderr, "%p %p\n", recieve, send);
@@ -45,13 +45,13 @@ int main()
 	{
 		fprintf(stderr, "parent executing\n");
 
-		send_big_data("send_ptoc.txt", pipe, is_parent);
+		send_big_data(argv[1], pipe, is_parent);
 	}
 	else if (pid == 0)
 	{
 		fprintf(stderr, "child executing\n");
 
-		recieve_big_data("recieve_ptoc.txt", pipe, !is_parent);
+		recieve_big_data(argv[2], pipe, !is_parent);
 	}
 	else
 	{

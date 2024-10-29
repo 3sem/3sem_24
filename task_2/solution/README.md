@@ -6,14 +6,12 @@ Full-Duplex Pipe implementation
 
 ## Installation
 
-1) `cd example`
+- `mkdir build`
 
-2) `mkdir build`
+- `cd build`
 
-3) `cd build`
+- `cmake ..`
 
-4) `cmake ..`
-
-5) `make`
+- `make`
 
 

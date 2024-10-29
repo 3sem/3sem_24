@@ -45,7 +45,7 @@ int main()
 
     if (pid)
 	{
-		clock_t proc_time = clock();
+		clock_t time_check = clock();
 
         Buffer buffer = {};
         alloc_buf(&buffer, LARGE_BUFFER_SIZE);
@@ -91,8 +91,8 @@ int main()
 
         waitpid(pid, NULL, 0);
 
-		proc_time = clock() - proc_time;
-        printf("time: %ld\n", proc_time);
+		time_check = clock() - time_check;
+        printf("time: %ld\n", time_check);
     }
     else
 	{

@@ -14,11 +14,9 @@
 #define SIZE 4096
 #define MAXLINE 1024
 
-// Предварительные объявления структур
 typedef struct pPipe Pipe;
 typedef struct op_table Ops;
 
-// Предварительные объявления функций
 size_t receive(Pipe *p);
 size_t send(Pipe *p);
 size_t child(Pipe *p, const char *fname);

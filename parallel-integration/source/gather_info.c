@@ -5,35 +5,37 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 
-#define SHM_NAME "/monte_carlo_shm"  // Shared memory name
+#define SHM_NAME "/monte_carlo_shm"
 
-int main(int argc, char *argv[]) {
-    if (argc != 2) {
+int main(int argc, char* argv[]) 
+{
+    if (argc != 2)
+	{
         fprintf(stderr, "Usage: %s <number_of_threads>\n", argv[0]);
         return 1;
     }
 
     int n_threads = atoi(argv[1]);
 
-    // Open the shared memory object
     int shm_fd = shm_open(SHM_NAME, O_RDONLY, 0666);
-    if (shm_fd == -1) {
+    if (shm_fd == -1)
+	{
         perror("shm_open failed");
         return 1;
     }
 
-    // Map shared memory
-    double *shared_mem = mmap(NULL, n_threads * sizeof(double),
+    double* shared_mem = mmap(NULL, n_threads * sizeof(double),
                               PROT_READ, MAP_SHARED, shm_fd, 0);
-    if (shared_mem == MAP_FAILED) {
+    if (shared_mem == MAP_FAILED)
+	{
         perror("mmap failed");
         close(shm_fd);
         return 1;
     }
 
-    // Sum the partial results
     double result = 0.0;
-    for (int i = 0; i < n_threads; i++) {
+    for (int i = 0; i < n_threads; i++)
+	{
         result += shared_mem[i];
     }
 
@@ -41,10 +43,9 @@ int main(int argc, char *argv[]) {
 
     printf("Integral result: %f\n", result);
 
-    // Clean up
     munmap(shared_mem, n_threads * sizeof(double));
     close(shm_fd);
-    shm_unlink(SHM_NAME);  // Remove shared memory after use
+    shm_unlink(SHM_NAME);  
 
     return 0;
 }

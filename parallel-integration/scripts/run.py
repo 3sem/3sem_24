@@ -5,15 +5,15 @@ import time
 def run_experiment(num_threads, total_points):
     # Функция для запуска программ A и B и измерения времени выполнения
     start_time = time.time()
-    subprocess.run(["./program_A", str(num_threads), str(total_points)])
-    subprocess.run(["./program_B", str(num_threads)])
+    subprocess.run(["build/compute_integral", str(num_threads), str(total_points)])
+    subprocess.run(["build/gather_info", str(num_threads)])
     end_time = time.time()
     return end_time - start_time
 
 def main():
     total_points = 1000000    # Фиксированное число точек
     max_threads = 64          # Максимальное число потоков
-    num_trials = 50           # Количество повторений для усреднения
+    num_trials = 25           # Количество повторений для усреднения
 
     times = []
     threads = range(1, max_threads + 1)

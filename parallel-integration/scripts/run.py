@@ -1,9 +1,9 @@
 import subprocess
 import matplotlib.pyplot as plt
 import time
+import os
 
 def run_experiment(num_threads, total_points):
-    # Функция для запуска программ A и B и измерения времени выполнения
     start_time = time.time()
     subprocess.run(["build/compute_integral", str(num_threads), str(total_points)])
     subprocess.run(["build/gather_info", str(num_threads)])
@@ -33,6 +33,11 @@ def main():
     plt.ylabel("Average Execution Time (s)")
     plt.title("Average Execution Time vs Number of Threads")
     plt.grid()
+
+    if not os.path.exists("pictures"):
+        os.makedirs("pictures")
+
+    plt.savefig("pictures/average_execution_time.png")
     plt.show()
 
 if __name__ == "__main__":

@@ -39,8 +39,6 @@ int main(int argc, char* argv[])
         result += shared_mem[i];
     }
 
-    result /= n_threads;
-
     printf("Integral result: %f\n", result);
 
     munmap(shared_mem, n_threads * sizeof(double));

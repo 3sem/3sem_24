@@ -70,7 +70,7 @@ void receiver(char *outfile, data_t *data, sems_t *sems) {
         }
         
         total += data->size;
-        printf("\rGot: %zu bytes", total);
+        printf("Got: %zu bytes", total);
         fflush(stdout);
         
         sem_post(&sems->mutex);
@@ -79,7 +79,6 @@ void receiver(char *outfile, data_t *data, sems_t *sems) {
         if (!data->size || data->done) break;
     }
     
-    printf("\nDone receiving\n");
     close(fd);
 }
 
@@ -107,7 +106,7 @@ void sender(char *infile, data_t *data, sems_t *sems) {
         }
         
         total += data->size;
-        printf("\rSent: %zu bytes", total);
+        printf("Sent: %zu bytes", total);
         fflush(stdout);
         
         sem_post(&sems->mutex);
@@ -119,7 +118,6 @@ void sender(char *infile, data_t *data, sems_t *sems) {
         }
     }
     
-    printf("\nDone sending\n");
     close(fd);
 }
 
@@ -170,7 +168,7 @@ int main(int argc, char *argv[]) {
 
     gettimeofday(&t2, NULL);
     double elapsed = calculate_elapsed_time(&t1, &t2);
-    printf("Time: %.3f sec\n", elapsed);
+    printf("Time: %.6f sec\n", elapsed);
 
     cleanup(data, sems, id1, id2, id3);
     return 0;

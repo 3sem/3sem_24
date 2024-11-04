@@ -12,25 +12,20 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 
-/* Константы */
-#define BUFFER_SIZE     (64 * 1024)  // 1MB
+#define BUFFER_SIZE     (64 * 1024)
 #define MSG_TYPE_DATA   1
 #define MSG_TYPE_END    2
 #define FILE_PERMS      0666
-
-/* Структуры */
 typedef struct {
     long mtype;
     char mtext[BUFFER_SIZE];
 } MessageBuffer;
 
-/* Прототипы функций */
 static int send_file(const char *input_file, int msqid);
 static int receive_file(const char *output_file, int msqid);
 static void print_usage(const char *program_name);
 static double calculate_elapsed_time(struct timeval *start, struct timeval *end);
 
-/* Реализация функций */
 static int send_file(const char *input_file, int msqid) {
     int fp = open(input_file, O_RDONLY);
     if (fp == -1) {
@@ -156,14 +151,11 @@ int main(int argc, char *argv[]) {
     }
 
     if (child_pid == 0) {
-        /* Дочерний процесс */
         if (receive_file(argv[2], msqid) == -1) {
             return EXIT_FAILURE;
         }
         return EXIT_SUCCESS;
     } 
-    
-    /* Родительский процесс */
     if (send_file(argv[1], msqid) == -1) {
         return EXIT_FAILURE;
     }

@@ -3,9 +3,11 @@
 
 #include <stdio.h>
 
-#define SMALL_BUFFER_SIZE  8192
+#define SMALL_BUFFER_SIZE  2048
 #define MEDIUM_BUFFER_SIZE 65536
 #define LARGE_BUFFER_SIZE  1048576
+
+#define CUR_BUFFER_SIZE SMALL_BUFFER_SIZE
 
 typedef struct
 {

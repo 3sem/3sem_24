@@ -33,7 +33,7 @@ int main()
     {
         clock_t time_check = clock();
         Buffer buffer = {};
-        alloc_buf(&buffer, LARGE_BUFFER_SIZE);
+        alloc_buf(&buffer, CUR_BUFFER_SIZE);
 
         int msg_d = msgget(MSG_ID, IPC_CREAT | 0666);
         if (msg_d == -1)

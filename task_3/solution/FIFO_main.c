@@ -37,7 +37,7 @@ int main()
 		clock_t time_check = clock();
 
         Buffer buffer = {};
-        alloc_buf(&buffer, LARGE_BUFFER_SIZE);
+        alloc_buf(&buffer, CUR_BUFFER_SIZE);
 
         int write_fd = open(fifo_name, O_WRONLY);
         if (write_fd == -1)
@@ -66,7 +66,7 @@ int main()
     else
 	{
         Buffer buffer = {};
-        alloc_buf(&buffer, LARGE_BUFFER_SIZE);
+        alloc_buf(&buffer, CUR_BUFFER_SIZE);
 
         int read_fd = open(fifo_name, O_RDONLY);
         if (read_fd == -1)

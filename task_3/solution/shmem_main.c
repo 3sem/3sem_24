@@ -48,9 +48,9 @@ int main()
 		clock_t time_check = clock();
 
         Buffer buffer = {};
-        alloc_buf(&buffer, LARGE_BUFFER_SIZE);
+        alloc_buf(&buffer, CUR_BUFFER_SIZE);
 
-        size_t shmem_size = LARGE_BUFFER_SIZE + sizeof(size_t);
+        size_t shmem_size = CUR_BUFFER_SIZE + sizeof(size_t);
 
         int shmem_id = shmget(SHMEM_ID, shmem_size, IPC_CREAT | 0666);
         if (shmem_id == -1)
@@ -96,7 +96,7 @@ int main()
     }
     else
 	{
-        size_t shmem_size = LARGE_BUFFER_SIZE;
+        size_t shmem_size = CUR_BUFFER_SIZE;
 
         int shmem_id = shmget(SHMEM_ID, shmem_size, IPC_CREAT | 0666);
         if (shmem_id == -1)

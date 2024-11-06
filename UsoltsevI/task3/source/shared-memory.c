@@ -115,7 +115,7 @@ static void *smem_send(void *v_args) {
         }
 
         rem = (rem + 1) % SMEM_NUM_PARTS;
-        args->num -= 1;
+        args->num += 1;
 
         char_sent += char_read;
 

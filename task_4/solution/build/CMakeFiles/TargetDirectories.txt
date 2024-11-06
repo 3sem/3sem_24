@@ -1,0 +1,3 @@
+/Users/bulatmotygullin/Documents/3sem_24/task_4/solution/build/CMakeFiles/integrator.x.dir
+/Users/bulatmotygullin/Documents/3sem_24/task_4/solution/build/CMakeFiles/edit_cache.dir
+/Users/bulatmotygullin/Documents/3sem_24/task_4/solution/build/CMakeFiles/rebuild_cache.dir

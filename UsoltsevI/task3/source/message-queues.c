@@ -66,7 +66,6 @@ int msgq_translate_file(int fd, size_t file_size) {
 
         while ((char_read = msgrcv(msg_id, buf, buf->bsize, 1, 0)) > 0) {
             size_t char_write = write(fd, buf->mtext, char_read);
-            // printf("recieved: %s\n\n\n", buf->mtext);
             CHECK_CONDITION_PRINT(char_write != char_read);
             char_rcvd += char_read;
             if (char_rcvd >= file_size) {
@@ -98,7 +97,6 @@ int msgq_translate_file(int fd, size_t file_size) {
         while ((char_read = read(fd, buf->mtext, buf->bsize)) > 0) {
             int msgsnd_ret = msgsnd(msg_id, buf, char_read, 0);
             CHECK_CONDITION_PERROR(msgsnd_ret != 0, "msgsnd")
-            // printf("sended: %s\n\n\n", buf->mtext);
             char_sent += char_read;
             if (char_sent >= file_size) {
                 break;

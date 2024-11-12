@@ -3,74 +3,114 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <string.h>
+#include "buffer.h"
 
-#define FIFO_NAME "/tmp/myfifo"  // FIFO file path
+#define FIFO_NAME "my_fifo"  // FIFO file path
 
-void sender_fifo(const char *input_file, size_t buffer_size) {
+int sender_fifo(const char* inputFilename, size_t bufferCapacity) 
+{
     // Create the FIFO (named pipe)
     if (mkfifo(FIFO_NAME, 0666) == -1) {
         perror("mkfifo failed");
         exit(1);
     }
 
-    // Open FIFO for writing
-    int fd = open(FIFO_NAME, O_WRONLY);
-    if (fd == -1) {
-        perror("open failed");
-        exit(1);
+    Buffer* buffer = CreateBuffer(bufferCapacity);
+
+    int outFileDesc = open(FIFO_NAME, O_WRONLY);
+
+    if (outFileDesc == -1)
+    {
+        perror("Unable to open fifo");
+
+        return EXIT_FAILURE;
     }
 
-    // Read data from file and write to FIFO
-    FILE *file = fopen(input_file, "rb");
-    if (!file) {
-        perror("Failed to open input file");
-        exit(1);
+    int inFileDesc = OpenFile(inputFilename);
+
+    if (inFileDesc == -1)
+    {
+        perror("Unable to open input file");
+
+        return EXIT_FAILURE;
     }
-    char buffer[1024];
-    size_t bytes_read = fread(buffer, 1, buffer_size, file);
-    fclose(file);
 
-    write(fd, buffer, bytes_read);
-    printf("Parent: Data written to FIFO\n");
+    while (readFromFile(buffer, inFileDesc))
+    {
+        writeToFile(buffer, outFileDesc);
+    }
 
-    close(fd);
+    printf("Parent: Data sent via fifo\n");
+
+    DestroyBuffer(buffer);
+    close(outFileDesc);
+    close(inFileDesc);
+
+    return 0;
 }
 
-void receiver_fifo(size_t buffer_size) {
-    // Open FIFO for reading
-    int fd = open(FIFO_NAME, O_RDONLY);
-    if (fd == -1) {
-        perror("open failed");
-        exit(1);
+int receiver_fifo(const char* outputFilename, size_t bufferCapacity) 
+{
+    Buffer* buffer = CreateBuffer(bufferCapacity);
+
+    int inFileDesc = open(FIFO_NAME, O_RDONLY);
+    if (inFileDesc == -1) 
+    {
+        perror("Unable to open file");
+
+        return EXIT_FAILURE;
     }
 
-    // Read data from FIFO
-    char buffer[1024];
-    ssize_t bytes_read = read(fd, buffer, buffer_size);
-    printf("Child: Data received from FIFO: %s\n", buffer);
+    int outFileDesc = CreateFile(outputFilename);
 
-    close(fd);
+    if (outFileDesc == -1)
+    {
+        perror("Unable to create file");
+
+        return EXIT_FAILURE;
+    }
+
+    ssize_t bytesRead;
+    while ((bytesRead = read(inFileDesc, buffer->buffer, bufferCapacity)) > 0) {
+        if (write(outFileDesc, buffer->buffer, bytesRead) == -1) {
+            perror("write to output file failed");
+            break;
+        }
+    }
+
+    printf("Child: Data received via fifo\n");
+
+    DestroyBuffer(buffer);
+    close(inFileDesc);
+    close(outFileDesc);
+
+
+    return 0;
 }
 
-int main() {
-    size_t buffer_size = 1024;  // Size of FIFO buffer (1 KB)
-    const char *input_file = "input.dat";  // Replace with your file path
+int main() 
+{
+    unlink(FIFO_NAME);
 
     pid_t pid = fork();
-    if (pid == -1) {
+
+    if (pid == -1) 
+    {
         perror("fork failed");
         exit(1);
     }
 
-    if (pid > 0) {
-        // Parent process (sender)
-        sender_fifo(input_file, buffer_size);
-        wait(NULL);  // Wait for child process to finish
-    } else {
-        // Child process (receiver)
-        receiver_fifo(buffer_size);
-        exit(0);
+    if (pid > 0) 
+    {
+        sender_fifo("data/8KB.dat", SMALL_BUFFER_SIZE);
+        int status = 0;
+        waitpid(pid, &status, 0);
+    } 
+    else 
+    {
+        receiver_fifo("8KB_fifo.ans", SMALL_BUFFER_SIZE);
     }
 
     return 0;

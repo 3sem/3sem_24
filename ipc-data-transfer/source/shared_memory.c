@@ -28,8 +28,34 @@ void cleanup_shared_memory(int shmemId, char *shmaddr);
 int receiver_shared_memory(const char* outputFilename, size_t bufferCapacity);
 int sender_shared_memory(const char* inputFilename, size_t bufferCapacity);
 
-int main() 
+int main(int argc, char* argv[]) 
 {
+    if (argc != 2) 
+    {
+        fprintf(stderr, "Usage: %s <BUFFER_SIZE>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    // Parse the buffer size argument
+    size_t bufferCapacity = 0;
+    if (strcmp(argv[1], "SMALL") == 0)
+    {
+        bufferCapacity = SMALL_BUFFER_SIZE;
+    }
+    else if (strcmp(argv[1], "MEDIUM") == 0)
+    {
+        bufferCapacity = MEDIUM_BUFFER_SIZE;
+    }
+    else if (strcmp(argv[1], "LARGE") == 0) 
+    {
+        bufferCapacity = LARGE_BUFFER_SIZE;
+    }
+    else 
+    {
+        fprintf(stderr, "Invalid buffer size. Use SMALL, MEDIUM, or LARGE.\n");
+        exit(EXIT_FAILURE);
+    }
+
     // Unlink semaphores in case they exist from previous runs
     sem_unlink(PARENT_SEM_NAME);
     sem_unlink(CHILD_SEM_NAME);
@@ -49,7 +75,7 @@ int main()
     // Parent process (Writer)
     if (pid) 
     {
-        sender_shared_memory("data/8KB.dat", SMALL_BUFFER_SIZE);
+        sender_shared_memory("data/data.dat", bufferCapacity);
         
         int status;
         waitpid(pid, &status, 0);
@@ -57,7 +83,7 @@ int main()
     // Child process (Receiver)
     else 
     {
-        receiver_shared_memory("8KB_shm.ans", SMALL_BUFFER_SIZE);
+        receiver_shared_memory("data/data.ans", bufferCapacity);
     }
 
     return EXIT_SUCCESS;
@@ -118,13 +144,15 @@ int receiver_shared_memory(const char* outputFilename, size_t bufferCapacity)
 {
     int shmemId = shmget(SHMEM_ID, bufferCapacity + sizeof(size_t), 0666);
 
-    if (shmemId == -1) {
+    if (shmemId == -1) 
+    {
         perror("Child shmget error");
         return EXIT_FAILURE;
     }
 
     char *shmaddr = shmat(shmemId, NULL, 0);
-    if (shmaddr == (void *)-1) {
+    if (shmaddr == (void *)-1) 
+    {
         perror("Child shmat error");
         return EXIT_FAILURE;
     }
@@ -132,14 +160,16 @@ int receiver_shared_memory(const char* outputFilename, size_t bufferCapacity)
     int fileDesc = CreateFile(outputFilename);
     if (fileDesc == -1) return EXIT_FAILURE;
 
-    while (1) {
+    while (1) 
+    {
         sem_wait(childSem); // Wait for data from sender
 
         size_t msgSize = *((size_t *)shmaddr);
         if (msgSize == 0) break; // Exit if size is zero (end of transmission)
 
         // Write data from shared memory to output file
-        if (write(fileDesc, shmaddr + sizeof(size_t), msgSize) < 0) {
+        if (write(fileDesc, shmaddr + sizeof(size_t), msgSize) < 0) 
+        {
             perror("write error");
             return EXIT_FAILURE;
         }

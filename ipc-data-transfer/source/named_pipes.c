@@ -90,8 +90,34 @@ int receiver_fifo(const char* outputFilename, size_t bufferCapacity)
     return 0;
 }
 
-int main() 
+int main(int argc, char* argv[]) 
 {
+    if (argc != 2) 
+    {
+        fprintf(stderr, "Usage: %s <BUFFER_SIZE>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    // Parse the buffer size argument
+    size_t bufferCapacity = 0;
+    if (strcmp(argv[1], "SMALL") == 0)
+    {
+        bufferCapacity = SMALL_BUFFER_SIZE;
+    }
+    else if (strcmp(argv[1], "MEDIUM") == 0)
+    {
+        bufferCapacity = MEDIUM_BUFFER_SIZE;
+    }
+    else if (strcmp(argv[1], "LARGE") == 0) 
+    {
+        bufferCapacity = LARGE_BUFFER_SIZE;
+    }
+    else 
+    {
+        fprintf(stderr, "Invalid buffer size. Use SMALL, MEDIUM, or LARGE.\n");
+        exit(EXIT_FAILURE);
+    }
+
     unlink(FIFO_NAME);
 
     pid_t pid = fork();
@@ -104,13 +130,13 @@ int main()
 
     if (pid > 0) 
     {
-        sender_fifo("data/8KB.dat", SMALL_BUFFER_SIZE);
+        sender_fifo("data/data.dat", bufferCapacity);
         int status = 0;
         waitpid(pid, &status, 0);
     } 
     else 
     {
-        receiver_fifo("8KB_fifo.ans", SMALL_BUFFER_SIZE);
+        receiver_fifo("data/data.ans", bufferCapacity);
     }
 
     return 0;

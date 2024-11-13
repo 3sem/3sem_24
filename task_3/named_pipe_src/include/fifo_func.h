@@ -11,7 +11,7 @@ typedef struct
 
 #define FIFO_NAME "./key_to_programmers_heart"
 
-#define BUFF_SIZE 4096
+//#define BUFF_SIZE 4096
 
 int fifo_init(pipe_st *pipe, const char *fifo_name, const size_t buff_size);
 

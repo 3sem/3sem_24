@@ -21,7 +21,7 @@ int main(int argc, char const *argv[])
     {
         start_timer();
         err_num = send_file_w_fifo(&pipe, argv[2]);
-        PRINT_TIME("> time to send a file with shared memory: %lld\n", stop_timer());
+        PRINT_TIME("> time to send a file with named pipes: %lld\n", stop_timer());
 
         wait(NULL);
     }

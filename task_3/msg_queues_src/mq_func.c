@@ -20,19 +20,13 @@ int mq_st_create(mq_st *mq, const char *key_name)
     RETURN_ERROR_ON_TRUE(msgq_id == -1, -1, 
         perror("message queue creation fail"););
 
-    /*struct msginfo info = {};
-    msgctl(msgq_id, IPC_INFO, (struct msqid_ds *)&info);
-    LOG("> message size is: %d\n", info.msgmax);
-    size_t)info.msgmax*/
-
     struct msgbuf *buff = (struct msgbuf *)calloc(1, sizeof(struct msgbuf));
     RETURN_ERROR_ON_TRUE(!buff, -1,
         printf("message buff creation error\n");
         msgctl(msgq_id, IPC_RMID, NULL););
 
-    //mq->key_name    = key_name;
     mq->key         = key;
-    mq->buf_size    = MSG_SIZE;
+    mq->buf_size    = BUFF_SIZE;
     mq->mq_id       = msgq_id;
     mq->msgbuf      = buff;
 
@@ -66,7 +60,6 @@ void mq_st_destr(mq_st *mq)
     free(mq->msgbuf);
 
     mq->key      = 0;
-    mq->key_name = NULL;
     mq->buf_size = 0;
     mq->mq_id    = 0;
     mq->msgbuf   = NULL;
@@ -131,7 +124,7 @@ int rcv_file_w_mq(const char *rcv_file_name, mq_st *mq)
 
     LOG("> buf addres: %p\n", mq->msgbuf);
 
-    int fd = open(rcv_file_name, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+    int fd = open(rcv_file_name, O_CREAT | O_TRUNC | O_WRONLY, 0666);
     RETURN_ERROR_ON_TRUE(fd == -1, -1,
         perror("rcv file opening error"););
 

@@ -7,25 +7,18 @@
 #include <sys/stat.h>
 #include <sys/msg.h>
 
-#define MSG_SIZE 1020
+//#define MSG_SIZE 1020
 
 #define KEY_NAME "./key_to_your_heart"
-
-typedef struct
-{
-    char shift[4];
-    char *msg;
-} msg_t;
 
 struct msgbuf
 {
     long    mtype;
-    char    msg[MSG_SIZE];
+    char    msg[BUFF_SIZE];
 };
 
 typedef struct
 {
-    const char     *key_name;
     key_t           key;
     int             mq_id;
     struct msgbuf  *msgbuf;

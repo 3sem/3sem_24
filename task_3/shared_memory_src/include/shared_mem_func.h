@@ -4,7 +4,7 @@
 #include "common_func.h"
 
 #define SHM_NAME            "shared_mem_send"
-#define BUFF_SIZE           8192
+//#define BUFF_SIZE           8192
 #define FIRST_SEM_NAME      "snd_sem"
 #define SECOND_SEM_NAME     "rcv_sem"
 

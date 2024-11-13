@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#define BUFF_SIZE 4092
+
 #define RETURN_ERROR_ON_TRUE(statement, return_val, ...)                \
     do                                                                  \
     {                                                                   \

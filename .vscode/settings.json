@@ -7,6 +7,11 @@
         "parser.h": "c",
         "mq_func.h": "c",
         "common_func.h": "c",
-        "msg.h": "c"
-    }
+        "msg.h": "c",
+        "shared_mem_func.h": "c",
+        "send_results.h": "c",
+        "process_results.h": "c",
+        "integral_calc.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "enabled"
 }

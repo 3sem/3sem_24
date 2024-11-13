@@ -28,11 +28,15 @@ int shm_init(shm_st *sh_memory_structure, const char *shm_name, const off_t shm_
 
     sem_snd = sem_open(FIRST_SEM_NAME, O_CREAT | O_EXCL, 0666, 0);
     RETURN_ERROR_ON_TRUE(sem_snd == SEM_FAILED, -1, 
-        perror("semaphore 1 creation failed"););
+        perror("semaphore 1 creation failed");
+        sem_unlink(FIRST_SEM_NAME);
+        sem_unlink(SECOND_SEM_NAME););
     
     sem_rcv = sem_open(SECOND_SEM_NAME, O_CREAT | O_EXCL, 0666, 0);
     RETURN_ERROR_ON_TRUE(sem_rcv == SEM_FAILED, -1, 
-        perror("semaphore 2 creation failed"););
+        perror("semaphore 2 creation failed");
+        sem_unlink(SECOND_SEM_NAME);
+        sem_unlink(FIRST_SEM_NAME););
 
     sh_memory_structure->shm_name   = shm_name;
     sh_memory_structure->shm_fd     = shm_fd;

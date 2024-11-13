@@ -1,17 +1,14 @@
 #include <stdio.h>
-#include <math.h>
 #include "integral_calc.h"
+#include "timer.h"
+#include "math_funcs.h"
 
-double square(double x);
-
-double square(double x)
+int main()
 {
-    return x;
-}
-
-int main(int argc, char const *argv[])
-{
+    start_timer();
     calculate_integral(square);
+    long long int time = stop_timer();
+    printf("\033[0;33m> Time to calculate integral: %lld\033[0m\n", time);
     
     return 0;
 }

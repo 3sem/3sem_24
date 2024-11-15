@@ -1,6 +1,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <assert.h>
+#include <stdlib.h>
 #include <math.h>
 #include "integral_calc.h"
 #include "thread_funcs.h"
@@ -51,23 +52,20 @@ long int point_belonging_check(integr_func_args *args)
 
 void set_points(integr_func_args *args)
 {
-    //заменить на случайные числа
-    double x_step = X_LIMIT / sqrt(POINTS_NUMBER);
-    double y_step = Y_LIMIT / sqrt(POINTS_NUMBER);
-    LOG("> x step is: %lf\n", x_step);
-    LOG("> y step is: %lf\n", y_step);
+    assert(args);
+
+    unsigned int seedp = RANDOM_SEQ_INT;
+
+    LOG("points for thread: %d\n", POINTS_PER_THREAD);
 
     long long int i = 0;
-    for (double x = 0; (x < X_RANGE) && (i < POINTS_PER_THREAD); x += x_step)
+    while (i < POINTS_PER_THREAD)
     {
-        for (double y = 0; (y < Y_LIMIT) && (i < POINTS_PER_THREAD); y += y_step)
-        {
-            args->points_arr[i].x = args->thread_number * X_RANGE + x;
-            args->points_arr[i].y = y;
+        args->points_arr[i].x = (((double)rand_r(&seedp) / (double)RAND_MAX) + args->thread_number) * X_RANGE;
+        args->points_arr[i].y = (double)rand_r(&seedp) / (double)RAND_MAX * Y_LIMIT;
 
-            i++;  
-        }
+        i++;
     }
-
+    
     return;
 }

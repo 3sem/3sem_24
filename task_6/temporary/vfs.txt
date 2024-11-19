@@ -7,9 +7,9 @@
          v /parsing of file path step-by-step 
 +-------------------+
 |  VFS Layer       | (/, path, to, file) --> lookup for dentry for each element.
-|  (Interpretation) | ^
-+-------------------+ . 
-         |            .
+|  (Interpretation) | ^    ^    ^    ^
++-------------------+ .    .    .    |
+         |            .    .    .    |
          | Lookup Superblock
          | and Inode
          v

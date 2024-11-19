@@ -3,12 +3,13 @@
 +-------------------+
          |
          | System Call
-         v /parsing of file path step-by-step
-+-------------------+
-|  VFS Layer       |
-|  (Interpretation) |
-+-------------------+
          |
+         v /parsing of file path step-by-step 
++-------------------+
+|  VFS Layer       | (/, path, to, file) --> lookup for dentry for each element.
+|  (Interpretation) | ^
++-------------------+ . 
+         |            .
          | Lookup Superblock
          | and Inode
          v
@@ -45,3 +46,16 @@
 +-------------------+
 |  User Process    |
 +-------------------+
+
+
+Parse Path /path/to/file
+- Start at the root directory (/).
+- Lookup path in the root directory's inode.
+- Get the dentry and inode for path.
+- Lookup to in the path directory's inode.
+- Get the dentry and inode for to.
+- Lookup file in the to directory's inode.
+- Get the dentry and inode for file.
+
+
+Use the (inode, dentry) for file --> (superblock) to perform the requested operation (e.g., open)

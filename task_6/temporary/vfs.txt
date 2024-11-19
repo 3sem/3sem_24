@@ -1,0 +1,47 @@
++-------------------+
+|  User Process    |
++-------------------+
+         |
+         | System Call
+         v /parsing of file path step-by-step
++-------------------+
+|  VFS Layer       |
+|  (Interpretation) |
++-------------------+
+         |
+         | Lookup Superblock
+         | and Inode
+         v
++-------------------+
+|  Superblock      |
+|  (struct super_block)|
++-------------------+
+         |
+         | Dentry Cache
+         | (struct dentry)
+         v
++-------------------+
+|  Inode           |
+|  (struct inode)  |
++-------------------+
+         |
+         | File Operations
+         | (struct file_operations)
+         v
++-------------------+
+|  File System     |
+|  Specific Operations|
++-------------------+
+         |
+         | Device Driver
+         | Interaction
+         v
++-------------------+
+|  Storage Device  |
++-------------------+
+         |
+         | Results Returned
+         v
++-------------------+
+|  User Process    |
++-------------------+

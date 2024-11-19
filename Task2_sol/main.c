@@ -14,7 +14,7 @@
 int main(int argc, const char* argv[]){
 
     Pipe* dpipe = pipe_ctor();
-    
+
     /*switch(argc){                                   //выбираем имя input файла
         case 0:{
             const char* filename = "file.txt";
@@ -33,6 +33,12 @@ int main(int argc, const char* argv[]){
     }*/
 
     const char* filename = "input.txt";
+    dpipe->fn = filename;
+
+    dpipe->file_size = get_file_size(filename);
+
+    fprintf(stderr, "file size: %zu\n", dpipe->file_size);
+
     dpipe->fd_input = open(filename, O_RDWR);
     
     dpipe->fd_output = open("output.txt", O_RDWR);
@@ -53,19 +59,13 @@ int main(int argc, const char* argv[]){
 
             dpipe->actions.snd(dpipe);
 
-            sleep(5);
-
             break;
         }
 
         default:{
             //PARENT CASE
 
-            fprintf(stderr, "switch parent send\n");
-
             dpipe->actions.snd(dpipe);
-
-            fprintf(stderr, "switch parent recieve\n");
 
             dpipe->actions.rcv = parent_recieve;
 
@@ -74,8 +74,6 @@ int main(int argc, const char* argv[]){
             break;
         }
     }
-
-    fprintf(stderr, "end of prog\n");
     
     pipe_dtor(dpipe);
 

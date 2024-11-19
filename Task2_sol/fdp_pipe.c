@@ -14,11 +14,11 @@ Pipe* pipe_ctor(void){
     dpipe->actions.snd = parent_send;
 
     if (pipe(dpipe->fd_direct) < 0){
-        printf("Pipe creation error\n");
+        printf("Pipe creation error");
         return NULL;
     }
     if (pipe(dpipe->fd_back) < 0){
-        printf("Pipe creation error\n");
+        printf("Pipe creation error");
         return NULL;
     }
     return dpipe;

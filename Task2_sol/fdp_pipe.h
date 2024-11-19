@@ -1,7 +1,7 @@
 #pragma once 
 #include <stdio.h>
 
-#define PIPE_BUF_SZ 4096*4096
+#define PIPE_BUF_SZ 4096
 
 typedef struct pPipe Pipe;
 
@@ -18,6 +18,7 @@ typedef struct pPipe {
         int fd_output;
         int fd_input; 
         const char* fn;
+        size_t file_size;
         size_t len; // data length in intermediate buffer
         Ops actions;
 } Pipe;

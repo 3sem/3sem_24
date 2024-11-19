@@ -12,7 +12,10 @@
         "send_results.h": "c",
         "process_results.h": "c",
         "integral_calc.h": "c",
-        "thread_funcs.h": "c"
+        "thread_funcs.h": "c",
+        "stdio.h": "c",
+        "debug.h": "c",
+        "options.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }

@@ -2,10 +2,11 @@
 #include <assert.h>
 #include "options.h"
 #include "debugging.h"
+#include "interacrtive_interface.h"
 
 int     run_deamon();
 
-int     run_interactive();
+//int     run_interactive();
 
 void    show_help();
 
@@ -40,11 +41,6 @@ int execute_option(const char *option_line)
 }
 
 int run_deamon()
-{
-    return 0;
-}
-
-int run_interactive()
 {
     return 0;
 }

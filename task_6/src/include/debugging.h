@@ -17,6 +17,7 @@
 enum ERRORS
 {
     ARGC_NOT_TWO    = 11,
+    ARGC_TOO_MANY   = 13,
     NON_EXIST_OPT   = 12,
 
 

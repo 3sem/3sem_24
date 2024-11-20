@@ -6,17 +6,26 @@
 
 int     run_deamon();
 
-//int     run_interactive();
+pid_t parse_pid(const char *pid_line);
 
 void    show_help();
 
 
-int execute_option(const char *option_line)
+int execute_option(char const *argv[])
 {
-    assert(option_line);
+    assert(argv);
 
-    unsigned int option = parse_options(option_line);
+    pid_t pid       = 0;
+
+    unsigned int option = parse_options(argv[1]);
     RETURN_ON_TRUE(option == ERR_OPT, ERR_OPT);
+
+    if (option == INTERACTIVE_IMP)
+        pid = parse_pid(argv[1]);
+    else 
+        pid = parse_pid(argv[2]);
+    RETURN_ON_TRUE(pid == ERR_PID, ERR_PID);
+    LOG("> PID to monitor is: %d\n", pid);
 
     switch (option)
     {
@@ -25,7 +34,8 @@ int execute_option(const char *option_line)
         break;
     
     case INTERACTIVE:
-        RETURN_ON_TRUE(run_interactive(), 0);
+    case INTERACTIVE_IMP:
+        RETURN_ON_TRUE(run_interactive(pid), 0);
         break;
 
     case HELP:
@@ -43,6 +53,17 @@ int execute_option(const char *option_line)
 int run_deamon()
 {
     return 0;
+}
+
+pid_t parse_pid(const char *pid_line)
+{
+    assert(pid_line);
+
+    pid_t pid = 0;
+    if (!sscanf(pid_line, "%d", &pid))
+        return ERR_PID;
+
+    return pid;
 }
 
 void show_help()

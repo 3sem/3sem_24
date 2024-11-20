@@ -16,9 +16,12 @@
 
 enum ERRORS
 {
+    ERR_PID         = -1,
     ARGC_NOT_TWO    = 11,
-    ARGC_TOO_MANY   = 13,
     NON_EXIST_OPT   = 12,
+    ARGC_TOO_MANY   = 13,
+    FILE_OPEN_ERR   = 14,
+    DATA_RCV_ERR    = 15,
 
 
 };

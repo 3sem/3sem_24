@@ -4,20 +4,22 @@
 #include <sys/wait.h>
 #include <limits.h>
 #include <fcntl.h>
+#include <signal.h>
 #include "interacrtive_interface.h"
 #include "debugging.h"
 #include "config_changing_funcs.h"
 #include "memory_watcher.h"
-
-//РЎРѕР·РґР°С‘Рј РґРѕС‡РµСЂРЅРёР№ РїСЂРѕС†РµСЃСЃ, РєРѕС‚РѕСЂС‹Р№ Р±СѓРґРµС‚ СЂР°Р±РѕС‚Р°С‚СЊ РІ С„РѕРЅРµ
-//РЈР±РёР№СЃС‚РІРѕ РїСЂРѕС†РµСЃСЃР° Р±СѓРґРµС‚ РїСЂРѕРёСЃС…РѕРґРёС‚СЊ С‡РµСЂРµР· СЃРёРіРЅР°Р»
-//Р’Р·Р°РёРјРѕРґРµР№СЃС‚РІРёРµ СЃ РїСЂРѕС†РµСЃСЃРѕРј Р±СѓРґРµС‚ РїСЂРѕРёСЃС…РѕРґРёС‚СЊ С‡РµСЂРµР· pipe
+#include "sig_handlers.h"
 
 unsigned int read_number_from_input();
 
-int interact_with_user(int fd);
+int interact_with_user(const int fd, const pid_t child_pid);
 
-int run_interactive(pid_t pid_to_monitor)
+int interface_process(const int fd, const pid_t child_pid);
+
+int functional_process(const pid_t pid_to_monitor, const int fd);
+
+int run_interactive(const pid_t pid_to_monitor)
 {
     pid_t pid        = 0;
 
@@ -29,45 +31,62 @@ int run_interactive(pid_t pid_to_monitor)
         perror("fork error\n"););
 
     if (pid)
-    {
-        int running_flag = 0;
-        while (!running_flag)
-            running_flag = interact_with_user(fd);
-
-        int wstatus = 0;
-        waitpid(pid, &wstatus, 0);
-
-        close(fd);
-        destruct_cfg_fifo();
-        return WEXITSTATUS(wstatus);
-    }
+        return interface_process(fd, pid);
     else
-    {
-        //sigaction СЃСЋРґР°
-
-        for (int i = 0; i < 1; i++)
-        {
-            sleep(10);
-
-            config_st config = {15, 15, 555};
-
-            int error = update_config(&config, fd);
-            RETURN_ON_TRUE(error, error);
-
-            close(config.diff_file_fd);
-
-            printf("%d<>%u<>%d\n", config.monitoring_pid, config.period, config.diff_file_fd);
-        }
-        
-        close(fd);
-        return 0;
-    }
+        return functional_process(pid_to_monitor, fd);
     
     
     return 0;
 }
 
-int interact_with_user(int fd)
+int interface_process(const int fd, const pid_t child_pid)
+{
+    //Поставить обработчик сигналов на процесс, улучшить интерфейс визуально
+
+    int running_flag = 0;
+    while (!running_flag)
+        running_flag = interact_with_user(fd, child_pid);
+
+    int wstatus = 0;
+    waitpid(child_pid, &wstatus, 0);
+
+    close(fd);
+    destruct_cfg_fifo();
+    return WEXITSTATUS(wstatus);
+}
+
+int functional_process(const pid_t pid_to_monitor, const int fd)
+{
+    struct sigaction new_action = {};
+    new_action.sa_handler = functional_process_sigint;
+    new_action.sa_flags = (int)SA_RESETHAND;
+
+    sigaction(SIGINT, &new_action, NULL);
+
+    config_st config = {pid_to_monitor, STANDART_PERIOD, STANDART_FILE_OUTPUT};
+    int ret_val = 0;
+
+    while (1)
+    {
+        RETURN_ON_TRUE(check_if_signaled(), 1);
+
+        sleep(config.period);
+
+        ret_val = update_config(&config, fd);
+        //Здесь функция основного функционала
+        printf("config is: {\"%d\", \"%u\", \"%d\"}\n", config.monitoring_pid, config.period, config.diff_file_fd);
+
+        if (ret_val)
+            break;
+    }
+
+    close(config.diff_file_fd);
+    close(fd);
+    
+    return ret_val;
+}
+
+int interact_with_user(const int fd, const pid_t child_pid)
 {
     unsigned int choosen_option = 0;
     int error = 0;
@@ -122,6 +141,7 @@ int interact_with_user(int fd)
 
     case 4:
         printf("\033[0m\n");
+        kill(child_pid, SIGINT);
         return 1;
 
     default:

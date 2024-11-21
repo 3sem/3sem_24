@@ -3,6 +3,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <assert.h>
+#include <errno.h>
+#include <poll.h>
 #include "debugging.h"
 #include "config_changing_funcs.h"
 
@@ -24,11 +27,20 @@ void destruct_cfg_fifo()
 
 int update_config(config_st *config, const int fd_r)
 {
+    assert(config);
+
+    struct pollfd fds = {};
+    fds.fd       = fd_r;
+    fds.events   = POLLIN;
+
+    if (!poll(&fds, 1, 0))
+        return 0;
+
     int config_parameter_type = 0;
     ssize_t error = 0;
 
     error = read(fd_r, &config_parameter_type, sizeof(int));
-    RETURN_ON_TRUE(error == -1, -1, perror("cfg file reading error"););
+    RETURN_ON_TRUE(error == -1, 0);
 
     switch (config_parameter_type)
     {
@@ -40,6 +52,7 @@ int update_config(config_st *config, const int fd_r)
     case PERIOD:
         error = read(fd_r, &config->period, sizeof(unsigned int));
         RETURN_ON_TRUE(error == -1, -1, perror("cfg file reading error"););
+        RETURN_ON_TRUE(config->period == 0, PERIOD_ZERO, printf("processmon: period of monitoring can't be zero\n"););
         break;
 
     case DIFF_FILE_FD:
@@ -59,6 +72,8 @@ int update_config(config_st *config, const int fd_r)
 
 int change_config(const int fd_w, const int option, const void *data, size_t size)
 {
+    assert(data);
+
     ssize_t error   = write(fd_w, &option, sizeof(int));
     RETURN_ON_TRUE(error == -1, -1, perror("cfg file wrtiting error\n"););
 

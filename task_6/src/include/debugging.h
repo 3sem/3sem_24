@@ -22,8 +22,14 @@ enum ERRORS
     ARGC_TOO_MANY   = 13,
     FILE_OPEN_ERR   = 14,
     DATA_RCV_ERR    = 15,
+    PERIOD_ZERO     = 16,
 
 
+};
+
+enum RET_VALUES
+{
+    INTERACT_KILL        = 101,
 };
 
 #endif

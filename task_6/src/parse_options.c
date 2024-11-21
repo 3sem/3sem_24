@@ -18,7 +18,7 @@ unsigned int parse_options(const char *line)
     int n   = 0;
 
     sscanf(line, "%d%n", &num, &n);
-    RETURN_ON_TRUE(n,                   INTERACTIVE,    LOG("> implicit interactive option found\n"););
+    RETURN_ON_TRUE(n,                   INTERACTIVE_IMP,    LOG("> implicit interactive option found\n"););
     
     printf("processmon: invalid argument. Use -h for info\n");
     return ERR_OPT;

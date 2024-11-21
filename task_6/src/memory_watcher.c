@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
+#include "memory_watcher.h"
 
 int memory_manage()
 {

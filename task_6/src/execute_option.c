@@ -6,10 +6,9 @@
 
 int     run_deamon();
 
-pid_t parse_pid(const char *pid_line);
+pid_t   parse_pid(const char *pid_line);
 
 void    show_help();
-
 
 int execute_option(char const *argv[])
 {

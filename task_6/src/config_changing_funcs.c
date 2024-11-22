@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <assert.h>
+#include <limits.h>
 #include <errno.h>
 #include <poll.h>
 #include "debugging.h"
@@ -56,10 +57,16 @@ int update_config(config_st *config, const int fd_r)
         break;
 
     case DIFF_FILE_FD:
-        close(config->diff_file_fd);
-
-        error = read(fd_r, &config->diff_file_fd, sizeof(int));
+        char path[PATH_MAX] = {0};
+        error = read(fd_r, path, PATH_MAX * sizeof(char));
         RETURN_ON_TRUE(error == -1, -1, perror("cfg file reading error"););
+
+        int output_fd = open(path, O_CREAT | O_WRONLY, 0777);
+        RETURN_ON_TRUE(output_fd == -1, -1, perror("new output file creation error"););
+
+        close(config->diff_file_fd);
+        config->diff_file_fd = output_fd;
+
         break;
 
     default:

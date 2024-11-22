@@ -150,8 +150,7 @@ static void process_events(InotifyData *data) {
                             create_backup(subpath);
                         }
                     }
-                }
-                if (event->mask & IN_DELETE) {
+                } else if (event->mask & IN_DELETE) {
                     printf("Удалён: %s\n", event->name);
                 }
             }

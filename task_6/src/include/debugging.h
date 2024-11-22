@@ -1,7 +1,7 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#define LOG(...) fprintf(stderr, __VA_ARGS__)
+#define LOG(...) //fprintf(stderr, __VA_ARGS__)
 
 #define RETURN_ON_TRUE(statement, ret_val, ...)             \
     do                                                      \

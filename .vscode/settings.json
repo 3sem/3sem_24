@@ -15,7 +15,8 @@
         "thread_funcs.h": "c",
         "stdio.h": "c",
         "debug.h": "c",
-        "options.h": "c"
+        "options.h": "c",
+        "interacrtive_interface.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }

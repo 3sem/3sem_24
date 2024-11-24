@@ -5,21 +5,20 @@
 
 typedef struct
 {
-	double a;
-	double b;
-} Interval;
+    size_t thread_id;
+    size_t points;
+    double* areas;
+    double segment_start;
+    double segment_end;
+	double (*f)(double);
+} ThreadData;
 
-typedef struct
-{
-    double (*f)(double);
-    double max_y;
-    double *result;
-    Interval x_interval;
-    unsigned int seed;  // Add seed field here
-} Baby_Gronk_Args;
+double integrate(	double (*f)(double),
+					double begin,
+					double end,
+					size_t thread_amount,
+					size_t point_amount);
 
-double generate_rand(Interval interval, unsigned int *seed);
-double integrate(double (*f) (double), Interval x_interval);
-void* baby_gronk(void* arg);
+void* calculate_fragment(void* arg);
 
 #endif // INTEGRATOR_H

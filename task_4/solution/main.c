@@ -1,32 +1,41 @@
-#include "integrator.h"
 #include <stdio.h>
-#include <time.h>
+#include <stdlib.h>
+#include <sys/time.h>
+
+#include "integrator.h"
+
+const double begin = 0.0;
+const double end = 1.0;
 
 double f(double x)
 {
-    return x * x + 2 * x + 3;
+    return x * x;
 }
 
-int main()
+int main(int argc, char** argv)
 {
-    Interval x_interval = {2, 5};
+    if (argc != 3)
+    {
+        printf("Please enter number of threads and amount of segments\n");
+        return 1;
+    }
 
-    struct timespec start, end;
+    size_t points_amount = (size_t)atoi(argv[1]);
+    size_t thread_amount = (size_t)atoi(argv[2]);
 
-    // Get the start time
-    clock_gettime(CLOCK_MONOTONIC, &start);
+    struct timeval start_time, end_time;
+    gettimeofday(&start_time, NULL);
 
-    // Call the integrate function
-    double result = integrate(f, x_interval);
+    double result = integrate(f, begin, end, thread_amount, points_amount);
 
-    // Get the end time
-    clock_gettime(CLOCK_MONOTONIC, &end);
+    gettimeofday(&end_time, NULL);
 
-    // Calculate the time difference in seconds
-    double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+    double execution_time = (end_time.tv_sec - start_time.tv_sec) +
+                            (end_time.tv_usec - start_time.tv_usec) / 1000000.0;
 
-    printf("Result: %lf\n", result);
-    printf("Execution time: %lf seconds\n", elapsed);
+	// printf("Result: %lf\n", result);
+    // printf("Execution time: %f seconds\n", execution_time);
+	printf("%lu %lf\n", thread_amount, execution_time);
 
     return 0;
 }

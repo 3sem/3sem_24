@@ -16,7 +16,13 @@
         "stdio.h": "c",
         "debug.h": "c",
         "options.h": "c",
-        "interacrtive_interface.h": "c"
+        "interacrtive_interface.h": "c",
+        "open_pid_maps.h": "c",
+        "functional_part.h": "c",
+        "config_changing_funcs.h": "c",
+        "interface_commands.h": "c",
+        "debugging.h": "c",
+        "inotify_func.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }

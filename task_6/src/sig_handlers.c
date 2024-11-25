@@ -47,7 +47,6 @@ handler_t technical_sigint(int signum)
 
 handler_t interface_sigchld(int signum)
 {
-    LOG("> child process returned error\n");
     interface_sigchld_status = signum;
 
     return;

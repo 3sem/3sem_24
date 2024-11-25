@@ -34,8 +34,7 @@ int execute_option(char const *argv[])
     
     case INTERACTIVE:
     case INTERACTIVE_IMP:
-        RETURN_ON_TRUE(run_interactive(pid), 0);
-        break;
+        return run_interactive(pid);
 
     case HELP:
         show_help();

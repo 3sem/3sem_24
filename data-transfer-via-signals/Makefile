@@ -6,5 +6,5 @@ all:
 	@$(CC) main.c -o main
 
 run:
-	./main input.dat output.dat
-	md5sum input.dat output.dat
+	@./main output.dat input.dat
+	md5sum output.dat input.dat

@@ -5,14 +5,16 @@
 #include <fcntl.h>
 #include <string.h>
 
-#define CHUNK_SIZE 4  // Chunk size in bytes
+#define CHUNK_SIZE 4 
 
-int done = 0;  // Flag to indicate end of file
-int output_fd; // File descriptor for the output file
+int done = 0; 
+int output_fd;
 size_t total_bytes_received = 0;
 
-void signal_handler(int signo, siginfo_t *info, void *context) {
-    if (info->si_value.sival_int == 0) {
+void signal_handler(int signo, siginfo_t* info, void* context) 
+{
+    if (info->si_value.sival_int == 0) 
+    {
         done = 1;  // End of file
         printf("[Receiver] End of file signal received.\n");
         return;
@@ -21,13 +23,15 @@ void signal_handler(int signo, siginfo_t *info, void *context) {
     // Decode the payload into bytes
     int payload = info->si_value.sival_int;
     unsigned char chunk[CHUNK_SIZE];
-    for (int i = CHUNK_SIZE - 1; i >= 0; i--) {
+    for (int i = CHUNK_SIZE - 1; i >= 0; i--) 
+    {
         chunk[i] = payload & 0xFF;
         payload >>= 8;
     }
 
     // Write the chunk directly to the output file
-    if (write(output_fd, chunk, CHUNK_SIZE) < 0) {
+    if (write(output_fd, chunk, CHUNK_SIZE) < 0) 
+    {
         perror("Error writing to output file");
         exit(EXIT_FAILURE);
     }
@@ -38,17 +42,20 @@ void signal_handler(int signo, siginfo_t *info, void *context) {
            CHUNK_SIZE, chunk[0], chunk[1], chunk[2], chunk[3]);
 }
 
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
+int main(int argc, char *argv[]) 
+{
+    if (argc < 2) 
+    {
         fprintf(stderr, "Usage: %s <output_file>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
-    const char *output_file = argv[1];
+    const char* output_file = argv[1];
 
     // Open the output file
     output_fd = open(output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    if (output_fd < 0) {
+    if (output_fd < 0) 
+    {
         perror("Error opening output file");
         exit(EXIT_FAILURE);
     }
@@ -59,7 +66,8 @@ int main(int argc, char *argv[]) {
     sa.sa_sigaction = signal_handler;
     sigemptyset(&sa.sa_mask);
 
-    if (sigaction(SIGRTMIN, &sa, NULL) == -1) {
+    if (sigaction(SIGRTMIN, &sa, NULL) == -1) 
+    {
         perror("Error setting up signal handler");
         close(output_fd);
         exit(EXIT_FAILURE);
@@ -69,7 +77,8 @@ int main(int argc, char *argv[]) {
     printf("[Receiver] Waiting for file...\n");
 
     // Wait for signals until the file transfer is complete
-    while (!done) {
+    while (!done) 
+    {
         pause();
     }
 

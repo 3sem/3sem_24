@@ -64,7 +64,7 @@ void send_file(pid_t receiver_pid, const char* file_path)
     close(fd);
 }
 
-int main(int argc, char *argv[]) 
+int main(int argc, char* argv[]) 
 {
     if (argc < 3) 
     {

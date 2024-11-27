@@ -7,12 +7,14 @@
 void start_receiver(const char *output_file, pid_t *receiver_pid) {
     *receiver_pid = fork();
     
-    if (*receiver_pid == -1) {
+    if (*receiver_pid == -1) 
+    {
         perror("Fork failed");
         exit(1);
     }
 
-    if (*receiver_pid == 0) {
+    if (*receiver_pid == 0) 
+    {
         // Child process: run the receiver
         printf("Starting receiver...\n");
         char *args[] = {"./receiver", (char *)output_file, NULL};
@@ -31,13 +33,14 @@ void start_sender(pid_t receiver_pid, const char *input_file) {
     char *args[] = {"./sender", receiver_pid_str, (char *)input_file, NULL};
     execvp(args[0], args);
 
-    // If execvp fails
     perror("Sender exec failed");
     exit(1);
 }
 
-int main(int argc, char *argv[]) {
-    if (argc < 3) {
+int main(int argc, char *argv[]) 
+{
+    if (argc < 3) 
+    {
         printf("Usage: %s <output_file> <file_to_send>\n", argv[0]);
         return 1;
     }
@@ -47,16 +50,12 @@ int main(int argc, char *argv[]) {
 
     pid_t receiver_pid;
 
-    // Start the receiver process
     start_receiver(output_file, &receiver_pid);
 
-    // Give the receiver some time to start
     sleep(1);
 
-    // Start the sender process
     start_sender(receiver_pid, input_file);
 
-    // Wait for the receiver to finish
     waitpid(receiver_pid, NULL, 0);
 
     printf("File transfer complete.\n");

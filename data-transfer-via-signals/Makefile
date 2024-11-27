@@ -1,9 +1,10 @@
 CC = gcc
 
 all:
-	@$(CC) reader.c -o reader
-	@$(CC) writer.c -o writer
+	@$(CC) receiver.c -o receiver
+	@$(CC) sender.c -o sender 
+	@$(CC) main.c -o main
 
 run:
-	@./writer input.dat 993
+	./main input.dat output.dat
 	md5sum input.dat output.dat

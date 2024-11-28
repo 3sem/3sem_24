@@ -22,7 +22,7 @@ int change_period(const int fd)
     LOG("changing the timing\n");
     printf("\bChanging monitoring period. Please enter new time in seconds:\n>");
     unsigned int new_period = read_number_from_input();
-    printf("New period is: %u. Wait for the period to apply", new_period);
+    printf("New period is: %u. Wait for the period to apply\n", new_period);
     return change_config(fd, PERIOD, &new_period, sizeof(unsigned int));
 }
 

@@ -22,7 +22,12 @@
         "config_changing_funcs.h": "c",
         "interface_commands.h": "c",
         "debugging.h": "c",
-        "inotify_func.h": "c"
+        "inotify_func.h": "c",
+        "unistd.h": "c",
+        "fcntl.h": "c",
+        "poll.h": "c",
+        "inotify.h": "c",
+        "find_file_diff.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }

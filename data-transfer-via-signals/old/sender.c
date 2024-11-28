@@ -3,13 +3,11 @@
 #include <signal.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <semaphore.h>
 #include <string.h>
 #include <time.h>
+#include <errno.h>
 
 #define CHUNK_SIZE 4  // Chunk size in bytes
-
-sem_t *semaphore;
 
 void send_file(pid_t receiver_pid, const char* file_path) 
 {
@@ -43,7 +41,6 @@ void send_file(pid_t receiver_pid, const char* file_path)
 
         union sigval sv;
         sv.sival_int = payload;
-
         if (sigqueue(receiver_pid, SIGRTMIN, sv) == -1) 
         {
             perror("Error sending signal");
@@ -51,12 +48,12 @@ void send_file(pid_t receiver_pid, const char* file_path)
             exit(EXIT_FAILURE);
         }
 
-        sem_wait(semaphore);
-
         printf("[Sender] Sent %ld bytes: %02x %02x %02x %02x\n",
                bytes_read, buffer[0], buffer[1], buffer[2], buffer[3]);
 
         total_bytes_sent += bytes_read;
+
+        usleep(10);  // Small delay to avoid queue overflow
     }
 
     union sigval sv;
@@ -73,13 +70,6 @@ int main(int argc, char* argv[])
     if (argc < 3) 
     {
         fprintf(stderr, "Usage: %s <receiver_pid> <file_to_send>\n", argv[0]);
-        exit(EXIT_FAILURE);
-    }
-
-    semaphore = sem_open("/signal_semaphore", 0);
-    if (semaphore == SEM_FAILED) 
-    {
-        perror("sem_open");
         exit(EXIT_FAILURE);
     }
 
@@ -107,8 +97,6 @@ int main(int argc, char* argv[])
                    (end_time.tv_nsec - start_time.tv_nsec) / 1e3;
 
     printf("Time taken to send signal: %.2f microseconds\n", elapsed_time);
-
-    sem_close(semaphore);
 
     return 0;
 }

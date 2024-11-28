@@ -4,11 +4,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
-#include <semaphore.h>
 
 #define CHUNK_SIZE 4 
-
-sem_t* semaphore;
 
 int done = 0; 
 int output_fd;
@@ -43,8 +40,6 @@ void signal_handler(int signo, siginfo_t* info, void* context)
 
     printf("[Receiver] Received %d bytes: %02x %02x %02x %02x\n",
            CHUNK_SIZE, chunk[0], chunk[1], chunk[2], chunk[3]);
-
-    sem_post(semaphore);
 }
 
 int main(int argc, char *argv[]) 
@@ -52,13 +47,6 @@ int main(int argc, char *argv[])
     if (argc < 2) 
     {
         fprintf(stderr, "Usage: %s <output_file>\n", argv[0]);
-        exit(EXIT_FAILURE);
-    }
-
-    semaphore = sem_open("/signal_semaphore", O_CREAT, 0644, 1);
-    if (semaphore == SEM_FAILED) 
-    {
-        perror("sem_open");
         exit(EXIT_FAILURE);
     }
 
@@ -98,8 +86,6 @@ int main(int argc, char *argv[])
 
     // Close the output file
     close(output_fd);
-
-    sem_close(semaphore);
     return 0;
 }
 

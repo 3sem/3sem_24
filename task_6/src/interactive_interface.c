@@ -9,7 +9,6 @@
 #include "interface_commands.h"
 #include "debugging.h"
 #include "config_changing_funcs.h"
-#include "memory_watcher.h"
 #include "sig_handlers.h"
 #include "functional_part.h"
 
@@ -57,7 +56,7 @@ int interface_process(const int fd, const pid_t child_pid)
 
 int interact_with_user(const int fd)
 {
-    unsigned int choosen_option = 0;
+    int choosen_option = 0;
 
     RETURN_ON_TRUE(check_interface_signals(), 1);
 
@@ -70,7 +69,7 @@ int interact_with_user(const int fd)
     while (1)
     {
         choosen_option = read_number_from_input();
-        if (1 <= choosen_option && choosen_option <= 4)
+        if ((1 <= choosen_option && choosen_option <= 4) || choosen_option == -1)
             break;
         
         printf("Input error, please enter a number beetwen 1 and 4\n");
@@ -78,6 +77,8 @@ int interact_with_user(const int fd)
     
     switch (choosen_option)
     {
+    case -1: return 1;
+
     case 1: return change_pid(fd);
 
     case 2: return change_period(fd);

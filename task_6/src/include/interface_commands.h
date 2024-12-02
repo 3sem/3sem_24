@@ -1,7 +1,7 @@
 #ifndef INTERFACE_COMMANDS
 #define INTERFACE_COMMANDS
 
-unsigned int read_number_from_input();
+int read_number_from_input();
 
 int change_pid(const int fd);
 

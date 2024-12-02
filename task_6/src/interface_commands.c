@@ -21,8 +21,20 @@ int change_period(const int fd)
 {
     LOG("changing the timing\n");
     printf("\bChanging monitoring period. Please enter new time in seconds:\n>");
-    unsigned int new_period = read_number_from_input();
-    printf("New period is: %u. Wait for the period to apply\n", new_period);
+    int new_period = 0;
+    while (1)
+    {
+        new_period = read_number_from_input();
+        if (new_period <= 0)
+        {
+            printf("Processmon: period you entered can't be set, please enter a positive number\n");
+            continue;
+        }
+        
+        break;
+    }
+    
+    printf("New period is: %u. Wait for the period to apply\n", (unsigned int)new_period);
     return change_config(fd, PERIOD, &new_period, sizeof(unsigned int));
 }
 
@@ -48,14 +60,15 @@ int end_programm(const int child_pid)
     return 1;
 }
 
-unsigned int read_number_from_input()
+int read_number_from_input()
 {
-    unsigned int number  = 0;
+    int number  = 0;
     int scanned = 0;
 
     while (1)
     {   
-        scanned = scanf("%u", &number);
+        scanned = scanf("%d", &number);
+        RETURN_ON_TRUE(scanned == -1, -1, perror("input number read error"););
         if (scanned)
             break;
         

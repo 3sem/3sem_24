@@ -25,9 +25,11 @@ int functional_process(const pid_t pid_to_monitor, const int fd)
 
     LOG("the result of combination is: %s\n", path);
 
+    ret_val = create_tmp_dir();
+    RETURN_ON_TRUE(ret_val == -1, -1, perror("couldn't create temp directory"););
     while (1)
     {
-        RETURN_ON_TRUE(check_technical_signals(), 1);
+        RETURN_ON_TRUE(check_technical_signals(), 1, clear_tmp(););
 
         sleep(config.period);
 
@@ -35,14 +37,13 @@ int functional_process(const pid_t pid_to_monitor, const int fd)
         if (ret_val)
             break;
 
-        ret_val = find_file_diff(path);
+        ret_val = file_diff(path);
         if (ret_val)
             break;
         
-
-        RETURN_ON_TRUE(write(config.diff_file_fd, ">\n", 2 * sizeof(char)) == -1, -1, perror("couldn't write data"););
-
+        //RETURN_ON_TRUE(write(config.diff_file_fd, ">\n", 2 * sizeof(char)) == -1, -1, perror("couldn't write data"););
     }
+    clear_tmp();
 
     close(config.diff_file_fd);
     close(fd);

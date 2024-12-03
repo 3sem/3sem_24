@@ -2,15 +2,9 @@
 #define CFG_FILE_FUNCTIONS
 
 #include <sys/types.h>
+#include "parse_standard_config.h"
 
 #define CONFIG_FILE_PATH   "./processmon_config.cfg"
-
-typedef struct 
-{
-    pid_t           monitoring_pid;
-    unsigned int    period;
-    int             diff_file_fd;
-} config_st;
 
 enum FIFO_DATA_TYPES
 {
@@ -19,9 +13,9 @@ enum FIFO_DATA_TYPES
     DIFF_FILE_FD    = 3
 };
 
-int create_cfg_fifo();
+int create_ipc_fifo();
 
-void destruct_cfg_fifo();
+void destruct_ipc_fifo();
 
 int update_config(config_st *config, const int fd_r);
 

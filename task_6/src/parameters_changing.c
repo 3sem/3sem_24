@@ -8,9 +8,9 @@
 #include <errno.h>
 #include <poll.h>
 #include "debugging.h"
-#include "config_changing_funcs.h"
+#include "parameters_changing.h"
 
-int create_cfg_fifo()
+int create_ipc_fifo()
 {
     int err = mkfifo(CONFIG_FILE_PATH, 0666 | O_CREAT | O_EXCL);
     RETURN_ON_TRUE(err == -1, -1, perror("fifo creation error"););
@@ -21,7 +21,7 @@ int create_cfg_fifo()
     return fd;
 }
 
-void destruct_cfg_fifo()
+void destruct_ipc_fifo()
 {
     unlink(CONFIG_FILE_PATH);
 }
@@ -34,6 +34,7 @@ int update_config(config_st *config, const int fd_r)
     fds.fd       = fd_r;
     fds.events   = POLLIN;
 
+    // Поставить проверку на инт
     if (!poll(&fds, 1, 0))
         return 0;
 

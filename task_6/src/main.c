@@ -2,6 +2,8 @@
 #include "debugging.h"
 #include "options.h"
 
+//TO DO: сделать стандартный конфиг файл, сделать демона, добавить новые команды управления программой
+
 int main(int argc, char const *argv[])
 {
     RETURN_ON_TRUE(argc < 2, ARGC_NOT_TWO, printf("processmon: Not enough arguments. Specify process PID. For more information use -h\n"););

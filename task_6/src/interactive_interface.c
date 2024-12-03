@@ -8,7 +8,7 @@
 #include "interacrtive_interface.h"
 #include "interface_commands.h"
 #include "debugging.h"
-#include "config_changing_funcs.h"
+#include "parameters_changing.h"
 #include "sig_handlers.h"
 #include "functional_part.h"
 
@@ -20,8 +20,8 @@ int run_interactive(const pid_t pid_to_monitor)
 {
     pid_t pid        = 0;
 
-    int fd = create_cfg_fifo();
-    RETURN_ON_TRUE(fd == -1, -1, destruct_cfg_fifo(););
+    int fd = create_ipc_fifo();
+    RETURN_ON_TRUE(fd == -1, -1, destruct_ipc_fifo(););
 
     pid = fork();
     RETURN_ON_TRUE(pid == -1, -1,
@@ -50,7 +50,7 @@ int interface_process(const int fd, const pid_t child_pid)
     waitpid(child_pid, &wstatus, 0);
 
     close(fd);
-    destruct_cfg_fifo();
+    destruct_ipc_fifo();
     return WEXITSTATUS(wstatus);
 }
 

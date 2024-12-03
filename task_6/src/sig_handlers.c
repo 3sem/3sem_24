@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include "debugging.h"
-#include "config_changing_funcs.h"
+#include "parameters_changing.h"
 #include "sig_handlers.h"
 
 /*
@@ -40,7 +40,7 @@ handler_t technical_sigint(int signum)
 
     interface_sigint_status = signum;
 
-    destruct_cfg_fifo();
+    destruct_ipc_fifo();
 
     _exit(SIGINT);
 }
@@ -66,5 +66,3 @@ int check_technical_signals()
 
     return 0;
 }
-
-//Сделать обработчик для интерфейса (в случае ошибки)

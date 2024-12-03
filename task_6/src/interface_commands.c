@@ -4,7 +4,7 @@
 #include <signal.h>
 #include <limits.h>
 #include <string.h>
-#include "config_changing_funcs.h"
+#include "parameters_changing.h"
 #include "debugging.h"
 #include "interface_commands.h"
 

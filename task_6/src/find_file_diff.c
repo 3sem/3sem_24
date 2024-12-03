@@ -46,6 +46,7 @@ int file_diff(const char *path)
 
 int create_tmp_dir()
 {
+    //Сделать проверку на существование директории
     return mkdir(STANDARD_TMP_DIR, S_IFDIR | 0777);
 }
 

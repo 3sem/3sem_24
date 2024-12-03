@@ -6,9 +6,9 @@
 #include <sys/inotify.h>
 #include "debugging.h"
 #include "sig_handlers.h"
-#include "config_changing_funcs.h"
-#include "standart_config.h"
+#include "parameters_changing.h"
 #include "functional_part.h"
+#include "parse_standard_config.h"
 #include "find_file_diff.h"
 
 //ability to change standart config
@@ -18,7 +18,10 @@ int functional_process(const pid_t pid_to_monitor, const int fd)
     RETURN_ON_TRUE(signal_handler_set(technical_sigint, SIGINT) == -1, -1);
 
     int ret_val                         = 0;
-    config_st config                    = {pid_to_monitor, STANDART_PERIOD, STANDART_FILE_OUTPUT};
+    config_st config                    = {};
+    config.monitoring_pid               = pid_to_monitor;
+
+    load_standard_config(&config);
 
     char path[PATH_MAX]                 = {0};
     snprintf(path, PATH_MAX * sizeof(char), "./%d.txt", pid_to_monitor);

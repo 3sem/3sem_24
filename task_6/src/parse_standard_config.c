@@ -42,6 +42,26 @@ int load_standard_config(config_st *cfg)
     return 0;
 }
 
+int save_current_config(const config_st *cfg)
+{
+    char path[PATH_MAX] = {};
+    snprintf(path, PATH_MAX * sizeof(char), STANDARD_CONFIG_NAME, BIN_PATH);
+
+    int cfg_fd = open(path, O_WRONLY, 0777);
+    RETURN_ON_TRUE(cfg_fd == -1, -1, perror("config file open error"););
+
+    RETURN_ON_TRUE(ftruncate(cfg_fd, 0) == -1, -1);
+    RETURN_ON_TRUE(lseek(cfg_fd, SEEK_SET, 0) == -1, -1);
+
+    char buff[CONFIG_FILE_MAX_SIZE] = {0};
+    snprintf(buff, CONFIG_FILE_MAX_SIZE * sizeof(char), CONFIG_FILE_STRUCTURE, cfg->period, cfg->output_file_path, cfg->tmp_folder_path, cfg->tmp_delete_bool);
+
+    ssize_t bytes_written = write(cfg_fd, buff, strlen(buff) * sizeof(char));
+    RETURN_ON_TRUE(bytes_written == -1, -1, perror("couldn't write to config file"););
+
+    return 0;
+}
+
 int create_config_file(const char *path)
 {
     printf("Processmon: creating standard config file\n");
@@ -55,8 +75,7 @@ int create_config_file(const char *path)
     ssize_t bytes_written = write(cfg_fd, buff, strlen(buff) * sizeof(char));
     RETURN_ON_TRUE(bytes_written == -1, -1, perror("couldn't write to config file"););
 
-    int err_num = 0;//fcntl(cfg_fd, F_SETFD, O_RDONLY);
-    RETURN_ON_TRUE(err_num == -1, -1, perror("couldn't change config file flags to read"););
+    RETURN_ON_TRUE(lseek(cfg_fd, SEEK_SET, 0) == -1, -1);
 
     return cfg_fd;
 }

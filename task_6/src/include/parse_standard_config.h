@@ -28,4 +28,6 @@ TMP_DEL
 
 int load_standard_config(config_st *cfg);
 
+int save_current_config(const config_st *cfg);
+
 #endif

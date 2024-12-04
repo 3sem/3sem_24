@@ -23,6 +23,9 @@ enum ERRORS
     FILE_OPEN_ERR   = 14,
     DATA_RCV_ERR    = 15,
     PERIOD_ZERO     = 16,
+    CFG_EMPTY       = 17,
+    MEM_ALC_ERR     = 18,
+    CFG_PARSE_ERR   = 19,
 
 
 };

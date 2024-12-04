@@ -38,24 +38,23 @@ int change_period(const int fd)
     return change_config(fd, PERIOD, &new_period, sizeof(unsigned int));
 }
 
-int change_filepath(const int fd)
+int change_tmp_directory(const int fd)
 {
-    LOG("changing a filepath\n");
-    printf("\bChanging output file. Please enter new file path:\n>");
+    LOG("changing temporary directory path\n");
+    printf("\bChanging diff file location. Please enter new path:\n>");
     char path[PATH_MAX] = {};
     scanf("%s", path);
-    printf("New file path is: \"%s\"", path);
-
+    printf("New directory path is: \"%s\"\n", path);
 
     return change_config(fd, DIFF_FILE_FD, path, strlen(path) * sizeof(char));
 
     int output_fd = open(path, O_CREAT, 0777);
-    RETURN_ON_TRUE(output_fd == -1, -1, perror("new output file creation error"););
+    RETURN_ON_TRUE(output_fd == -1, -1, perror("new directory path creation error"););
 }
 
 int end_programm(const int child_pid)
 {
-    printf("Finishing programm.\033[0m\n\n");
+    printf("Finishing programm.\n");
     kill(child_pid, SIGINT);
     return 1;
 }

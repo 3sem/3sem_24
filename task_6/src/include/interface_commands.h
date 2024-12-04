@@ -7,7 +7,7 @@ int change_pid(const int fd);
 
 int change_period(const int fd);
 
-int change_filepath(const int fd);
+int change_tmp_directory(const int fd);
 
 int end_programm(const int child_pid);
 

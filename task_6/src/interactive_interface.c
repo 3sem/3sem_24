@@ -60,19 +60,21 @@ int interact_with_user(const int fd)
 
     RETURN_ON_TRUE(check_interface_signals(), 1);
 
-    printf("\033[47;30m\nprocessmon: your programm is running in interactive mode\n");
+    printf("processmon: your programm is running in interactive mode\n");
     printf("[1] - change proccess for monitoring\n");
     printf("[2] - change the frequency of how often monitoring will happen\n");
-    printf("[3] - change the output file\n");
+    printf("[3] - change the temporary folder path\n");
     printf("[4] - end the programm\n");
+    printf("[5] - save current parameters to standard config\n");
+    printf(">");
 
     while (1)
     {
         choosen_option = read_number_from_input();
-        if ((1 <= choosen_option && choosen_option <= 4) || choosen_option == -1)
+        if ((1 <= choosen_option && choosen_option <= 5) || choosen_option == -1)
             break;
         
-        printf("Input error, please enter a number beetwen 1 and 4\n");
+        printf("Input error, please enter a number beetwen 1 and 5\n");
     }
     
     switch (choosen_option)
@@ -83,9 +85,13 @@ int interact_with_user(const int fd)
 
     case 2: return change_period(fd);
 
-    case 3: return change_filepath(fd);
+    case 3: return change_tmp_directory(fd);
 
     case 4: return 1;
+
+    case 5: 
+        printf("Processmon: saving config. Wait for 1 monitor period in order for config to apply\n");
+        return change_config(fd, SAVE_CFG, NULL, 0);
         
     default:
         LOG("[error]> NON-existent option chosen\n");

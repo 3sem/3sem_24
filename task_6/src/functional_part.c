@@ -13,43 +13,51 @@
 
 //ability to change standart config
 
-int functional_process(const pid_t pid_to_monitor, const int fd)
+int functional_process(const pid_t pid_to_monitor, const int ipc_fd)
 {
     RETURN_ON_TRUE(signal_handler_set(technical_sigint, SIGINT) == -1, -1);
 
     int ret_val                         = 0;
     config_st config                    = {};
+    RETURN_ON_TRUE(init_cfg_struct(&config) == MEM_ALC_ERR, MEM_ALC_ERR,
+        printf("Processmon: couldn't allocate memory for temp directory path in config\n"););
+
     config.monitoring_pid               = pid_to_monitor;
 
-    load_standard_config(&config);
+    RETURN_ON_TRUE(load_standard_config(&config) == -1, -1, destr_cfg_struct(&config););
 
     char path[PATH_MAX]                 = {0};
     snprintf(path, PATH_MAX * sizeof(char), "./%d.txt", pid_to_monitor);
 
     LOG("the result of combination is: %s\n", path);
 
-    ret_val = create_tmp_dir();
-    RETURN_ON_TRUE(ret_val == -1, -1, perror("couldn't create temp directory"););
+    ret_val = create_tmp_dir(config.tmp_folder_path);
+    RETURN_ON_TRUE(ret_val == -1, -1, 
+        perror("couldn't create temp directory");
+        destr_cfg_struct(&config););
+
     while (1)
     {
-        RETURN_ON_TRUE(check_technical_signals(), 1, clear_tmp(););
+        if (check_technical_signals())
+            break;
 
         sleep(config.period);
 
-        ret_val = update_config(&config, fd);
+        ret_val = update_config(&config, ipc_fd);
         if (ret_val)
             break;
 
-        ret_val = file_diff(path);
+        ret_val = file_diff(path, config.tmp_folder_path);
         if (ret_val)
             break;
         
         //RETURN_ON_TRUE(write(config.diff_file_fd, ">\n", 2 * sizeof(char)) == -1, -1, perror("couldn't write data"););
     }
-    clear_tmp();
+    if (config.tmp_delete_bool) 
+        clear_tmp(config.tmp_folder_path);
 
-    close(config.diff_file_fd);
-    close(fd);
+    close(ipc_fd);
+    destr_cfg_struct(&config);
     
     return ret_val;
 }

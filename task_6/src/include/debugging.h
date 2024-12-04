@@ -26,6 +26,8 @@ enum ERRORS
     CFG_EMPTY       = 17,
     MEM_ALC_ERR     = 18,
     CFG_PARSE_ERR   = 19,
+    TMP_CNG_ERR     = 20,
+    TMP_CNG_WAIT    = 21,
 
 
 };

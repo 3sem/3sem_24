@@ -12,6 +12,7 @@
 #include <memory.h>
 #include "debugging.h"
 #include "find_file_diff.h"
+#include "change_tmp_dir.h"
 #include "config_structure.h"
 
 static int diff_fd = 0;
@@ -36,6 +37,9 @@ int file_diff(const char *path, const char *tmp_path)
 {
     assert(path);
 
+    if (check_tmp_changing_status())
+        return TMP_CNG_WAIT;
+
     int err_num = prepare_file_diff(path, tmp_path);
     RETURN_ON_TRUE(err_num == -1, -1);
 
@@ -45,11 +49,10 @@ int file_diff(const char *path, const char *tmp_path)
     return 0;
 }
 
-// Переместить временную директорию....
-
 int create_tmp_dir(const char *path)
 {
-    //Сделать проверку на существование директории
+    clear_tmp(path);
+
     int ret_val = mkdir(path, S_IFDIR | 0777);
     if (ret_val == -1 && errno == EEXIST)
     {
@@ -62,7 +65,7 @@ int create_tmp_dir(const char *path)
 
 void clear_tmp(const char *tmp_path)
 {
-    RETURN_ON_TRUE(nftw(tmp_path, delete_file, 10, FTW_DEPTH | FTW_PHYS) == -1,, printf("Processmon: error occured while deleting temporary files\n"););
+    RETURN_ON_TRUE(nftw(tmp_path, delete_file, 10, FTW_DEPTH | FTW_PHYS) == -1,);
 }
 
 int delete_file(const char *path, const struct stat *sb, int typeflag, struct FTW *ftwbuf)
@@ -77,7 +80,6 @@ int delete_file(const char *path, const struct stat *sb, int typeflag, struct FT
     return 0;
 }
 
-//можно сделать структуру дифф файла с методами
 int write_diff(const char *tmp_path)
 {
     static int diff_counter = 0;

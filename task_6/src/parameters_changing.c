@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <poll.h>
 #include "debugging.h"
+#include "change_tmp_dir.h"
 #include "parameters_changing.h"
 
 int create_ipc_fifo()
@@ -35,7 +36,6 @@ int update_config(config_st *config, const int fd_r)
     fds.fd       = fd_r;
     fds.events   = POLLIN;
 
-    // Поставить проверку на инт
     if (!poll(&fds, 1, 0))
         return 0;
 
@@ -63,10 +63,15 @@ int update_config(config_st *config, const int fd_r)
         error = read(fd_r, path, PATH_MAX * sizeof(char));
         RETURN_ON_TRUE(error == -1, -1, perror("cfg file reading error"););
 
+        RETURN_ON_TRUE(move_tmp_dir(path, config->tmp_folder_path) == -1, TMP_CNG_ERR,
+            perror("Processmon: couldn't move tmp directory for some reason"););
+
         memcpy(config->tmp_folder_path, path, PATH_MAX * sizeof(char));
 
-        //Update tmp folder();
+        break;
 
+    case SAVE_CFG:
+        RETURN_ON_TRUE(save_current_config(config) == -1, -1);
         break;
 
     default:
@@ -79,7 +84,7 @@ int update_config(config_st *config, const int fd_r)
 
 int change_config(const int fd_w, const int option, const void *data, size_t size)
 {
-    assert(data);
+    assert(data || size == 0);
 
     ssize_t error   = write(fd_w, &option, sizeof(int));
     RETURN_ON_TRUE(error == -1, -1, perror("cfg file wrtiting error\n"););

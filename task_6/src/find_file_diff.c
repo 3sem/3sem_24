@@ -6,53 +6,63 @@
 #include <stdlib.h>
 #include <ftw.h>
 #include <fcntl.h>
+#include <errno.h>
 #include <limits.h>
 #include <assert.h>
 #include <memory.h>
 #include "debugging.h"
 #include "find_file_diff.h"
-
+#include "config_structure.h"
 
 static int diff_fd = 0;
 
 
 int delete_file(const char *path, const struct stat *sb, int typeflag, struct FTW *ftwbuf);
 
-int write_diff();
+int write_diff(const char *tmp_path);
 
-int open_diff_file(const int file_number);
+int open_diff_file(const int file_number, const char *tmp_path);
 
 int check_file_emptyness(int fd);
 
-int prepare_file_diff(const char *path);
+int prepare_file_diff(const char *path, const char *tmp_path);
 
-int file_to_file(const char *to_file, const char *from_file);
+int open_file_in_tmp_dir(const char *filename, const char *tmp_path);
 
-off_t get_file_size(int fd);
+int file_to_file(const int to_fd, const int from_fd);
 
 
-int file_diff(const char *path)
+int file_diff(const char *path, const char *tmp_path)
 {
     assert(path);
-    
-    int err_num = prepare_file_diff(path);
+
+    int err_num = prepare_file_diff(path, tmp_path);
     RETURN_ON_TRUE(err_num == -1, -1);
 
-    err_num = write_diff();
+    err_num = write_diff(tmp_path);
     RETURN_ON_TRUE(err_num == -1, -1);
 
     return 0;
 }
 
-int create_tmp_dir()
+// Переместить временную директорию....
+
+int create_tmp_dir(const char *path)
 {
     //Сделать проверку на существование директории
-    return mkdir(STANDARD_TMP_DIR, S_IFDIR | 0777);
+    int ret_val = mkdir(path, S_IFDIR | 0777);
+    if (ret_val == -1 && errno == EEXIST)
+    {
+        errno = 0;
+        ret_val = 0;
+    }
+    
+    return ret_val;
 }
 
-void clear_tmp()
+void clear_tmp(const char *tmp_path)
 {
-    RETURN_ON_TRUE(nftw(STANDARD_TMP_DIR, delete_file, 10, FTW_DEPTH | FTW_PHYS) == -1,, printf("Processmon: error occured while deleting temporary files\n"););
+    RETURN_ON_TRUE(nftw(tmp_path, delete_file, 10, FTW_DEPTH | FTW_PHYS) == -1,, printf("Processmon: error occured while deleting temporary files\n"););
 }
 
 int delete_file(const char *path, const struct stat *sb, int typeflag, struct FTW *ftwbuf)
@@ -68,13 +78,13 @@ int delete_file(const char *path, const struct stat *sb, int typeflag, struct FT
 }
 
 //можно сделать структуру дифф файла с методами
-int write_diff()
+int write_diff(const char *tmp_path)
 {
     static int diff_counter = 0;
 
     if (diff_fd == 0)
     {
-        diff_fd = open_diff_file(diff_counter);
+        diff_fd = open_diff_file(diff_counter, tmp_path);
         RETURN_ON_TRUE(diff_fd == -1, -1);
     }
 
@@ -83,9 +93,7 @@ int write_diff()
         close(diff_fd);
         diff_counter++;
 
-        LOG("> sisi\n");
-
-        diff_fd = open_diff_file(diff_counter);
+        diff_fd = open_diff_file(diff_counter, tmp_path);
         RETURN_ON_TRUE(diff_fd == -1, -1);
     }
     
@@ -97,15 +105,21 @@ int write_diff()
 
     dup2(diff_fd, STDOUT_FILENO);
 
-    execl("/bin/diff", "diff", STANDARD_OLD_DATA_FILE_PATH, STANDARD_NEW_DATA_FILE_PATH, (char *)NULL);
+    char path_one[PATH_MAX / 2] = {0};
+    char path_two[PATH_MAX / 2] = {0};
+
+    snprintf(path_one, PATH_MAX / 2 * sizeof(char), "%s/%s", tmp_path, STANDARD_OLD_DATA_FILE_NAME);
+    snprintf(path_two, PATH_MAX / 2 * sizeof(char), "%s/%s", tmp_path, STANDARD_NEW_DATA_FILE_NAME);
+
+    execl("/bin/diff", "diff", path_one, path_two, (char *)NULL);
 
     return 0;
 }
 
-int open_diff_file(const int file_number)
+int open_diff_file(const int file_number, const char *tmp_path)
 {
     char path[PATH_MAX] = {0};
-    snprintf(path, PATH_MAX * sizeof(char), STANDARD_DIFF_OUTPUT_DIR, file_number);
+    snprintf(path, PATH_MAX * sizeof(char), "%s/%d%s", tmp_path, file_number, STANDARD_DIFF_OUTPUT_FORMAT);
 
     diff_fd = open(path, O_CREAT | O_WRONLY, 0777);
     LOG("> diff fd is %d\n", diff_fd);
@@ -113,6 +127,7 @@ int open_diff_file(const int file_number)
 
     return diff_fd;
 }
+
 
 int check_file_emptyness(int fd)
 {
@@ -122,27 +137,56 @@ int check_file_emptyness(int fd)
     return 0;
 }
 
-int prepare_file_diff(const char *path)
+int prepare_file_diff(const char *path, const char *tmp_path)
 {
-    RETURN_ON_TRUE(file_to_file(STANDARD_OLD_DATA_FILE_PATH, STANDARD_NEW_DATA_FILE_PATH) == -1, -1);
-    RETURN_ON_TRUE(file_to_file(STANDARD_NEW_DATA_FILE_PATH, path) == -1, -1);
+    static int func_init = 1;
+    static int old_data_fd = 0;
+    static int new_data_fd = 0;
+    int map_fd      = 0;
+
+    if (func_init)
+    {
+        old_data_fd = open_file_in_tmp_dir(STANDARD_OLD_DATA_FILE_NAME, tmp_path);
+        RETURN_ON_TRUE(old_data_fd == -1, -1);
+        new_data_fd = open_file_in_tmp_dir(STANDARD_NEW_DATA_FILE_NAME, tmp_path);
+        RETURN_ON_TRUE(new_data_fd == -1, -1);
+
+        func_init = 0;
+    }
+    
+    map_fd = open(path, O_RDONLY);
+    RETURN_ON_TRUE(map_fd == -1, -1, perror("couldn't open monitoring file"););
+
+    RETURN_ON_TRUE(ftruncate(old_data_fd, 0) == -1, -1, perror("ftruncate error"););
+    RETURN_ON_TRUE(lseek(old_data_fd, SEEK_SET, 0) == -1, -1, perror("lseek error\n"););
+    RETURN_ON_TRUE(file_to_file(old_data_fd, new_data_fd) == -1, -1);
+
+    RETURN_ON_TRUE(ftruncate(new_data_fd, 0) == -1, -1, perror("ftruncate error"););
+    RETURN_ON_TRUE(lseek(new_data_fd, SEEK_SET, 0) == -1, -1, perror("lseek error\n"););
+    RETURN_ON_TRUE(file_to_file(new_data_fd, map_fd) == -1, -1);
+
+    close(map_fd);
 
     return 0;
 }
 
-int file_to_file(const char *to_file, const char *from_file)
+int open_file_in_tmp_dir(const char *filename, const char *tmp_path)
 {
-    assert(to_file);
-    assert(from_file);
+    assert(filename);
 
-    // сделать глобально или статик
+    char path[PATH_MAX] = {};
+    snprintf(path, PATH_MAX * sizeof(char), "%s/%s", tmp_path, filename);
+
+    int fd = open(path, O_RDWR | O_CREAT, 0777);
+    if (fd == -1)
+        perror("tmp file opening error");
+
+    return fd;
+}
+
+int file_to_file(const int to_fd, const int from_fd)
+{
     LOG("-------------------file to file converting-------------------------\n");
-
-    int to_fd = open(to_file, O_CREAT | O_WRONLY, 0777);
-    RETURN_ON_TRUE(to_fd == -1, -1, perror("file to transfer to opening error"););
-
-    int from_fd = open(from_file, O_CREAT | O_RDONLY, 0777);
-    RETURN_ON_TRUE(to_fd == -1, -1, perror("file to transfer from opening error"););
 
     LOG("> file descriptors are: %d and %d\n", to_fd, from_fd);
 
@@ -174,8 +218,7 @@ int file_to_file(const char *to_file, const char *from_file)
 
     LOG("> %ld bytes were written from buff\n", bytes_read);
 
-    close(to_fd);
-    close(from_fd);
+    free(buff);
 
     return 0;
 }

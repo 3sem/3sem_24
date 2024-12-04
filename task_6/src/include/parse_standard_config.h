@@ -1,28 +1,30 @@
 #ifndef STANDARD_CONFIG_LOAD
 #define STANDARD_CONFIG_LOAD
 
-typedef struct 
-{
-    pid_t           monitoring_pid;
-    unsigned int    period;
-    int             diff_file_fd;
-} config_st;
+#include "config_structure.h"
 
 //Standard config is located in binary directory
 #define STANDARD_CONFIG_NAME    "%s/standard_config.cfg"
 
 
-#define STANDARD_PERIOD         5
+#define STANDARD_PERIOD         (unsigned int)5
 #define STANDARD_FILE_OUTPUT    "./output.txt"
 #define STANDARD_TMP_PATH       "./processmon_tmp"
+#define STANDARD_TMP_DEL_BOOL   1
 
 
 #define CONFIG_FILE_MAX_SIZE    1024
 
+#define MON_PERIOD  "PERIOD: %u\n"
+#define OUT_PATH    "OUTPUT PATH: %s\n"
+#define TMP_PATH    "TEMP FOLDER PATH: %s\n"
+#define TMP_DEL     "DELETE TEMP FOLDER AFTER PROGRAMM IS FINISHED: %d"
+
 #define CONFIG_FILE_STRUCTURE   \
-"PERIOD: %d\n\
-OUTPUT PATH: %s\n\
-TEMP FOLDER PATH: %s"
+MON_PERIOD                      \
+OUT_PATH                        \
+TMP_PATH                        \
+TMP_DEL
 
 int load_standard_config(config_st *cfg);
 

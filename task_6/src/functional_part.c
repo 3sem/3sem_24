@@ -44,11 +44,11 @@ int functional_process(const pid_t pid_to_monitor, const int ipc_fd)
         sleep(config.period);
 
         ret_val = update_config(&config, ipc_fd);
-        if (ret_val)
+        if (ret_val && ret_val != TMP_CNG_ERR)
             break;
 
         ret_val = file_diff(path, config.tmp_folder_path);
-        if (ret_val)
+        if (ret_val && ret_val != TMP_CNG_WAIT)
             break;
         
         //RETURN_ON_TRUE(write(config.diff_file_fd, ">\n", 2 * sizeof(char)) == -1, -1, perror("couldn't write data"););

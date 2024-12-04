@@ -10,7 +10,8 @@ enum FIFO_DATA_TYPES
 {
     PID             = 1,
     PERIOD          = 2,
-    DIFF_FILE_FD    = 3
+    DIFF_FILE_FD    = 3,
+    SAVE_CFG
 };
 
 int create_ipc_fifo();

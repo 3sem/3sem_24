@@ -28,7 +28,9 @@
         "poll.h": "c",
         "inotify.h": "c",
         "find_file_diff.h": "c",
-        "parse_standard_config.h": "c"
+        "parse_standard_config.h": "c",
+        "ftw.h": "c",
+        "config_structure.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }

@@ -51,7 +51,7 @@ int move_tmp_dir(const char *path_to, const char *old_path)
 }
 
 
-//ПЕРЕДЕЛАТЬ функцию под для нормальной работы
+//ПЕРЕДЕЛАТЬ функцию под для нормальной работы, через DIR
 int move_file(const char *path, const struct stat *sb, int typeflag, struct FTW *ftwbuf)
 {
     (void)sb;

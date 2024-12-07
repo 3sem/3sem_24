@@ -2,7 +2,7 @@
 #include <assert.h>
 #include "options.h"
 #include "debugging.h"
-#include "interacrtive_interface.h"
+#include "interactive_mode.h"
 
 int     run_deamon();
 
@@ -66,16 +66,7 @@ pid_t parse_pid(const char *pid_line)
 
 void show_help()
 {
-    printf("processmon is a service to actively monitor process's changes in memory mapping\n");
-    printf("Usage: processmon [option] PID_number\n");
-    printf("Given options are:\n");
-    printf("[-d]: run programm in the background\n");
-    printf("[-i]: run programm in interactive mode\n");
-    printf("[-h]: show this menu\n");
-    printf("Note: there can be only 1 option. If no option is given, process runs in interactive mode\n");
-    printf("Interacting in the background:\n");
-    printf("\"chpid PID_number\" - change id of a process that is being monitored\n");
-    printf("\"chprd TIME\" - change the period of how frequently monitoring will happen\n");
+    printf(HELP_MESSAGE);
 
     return;
 }

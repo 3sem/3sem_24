@@ -1,6 +1,8 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
+#include "printable_text.h"
+
 #define LOG(...) //fprintf(stderr, __VA_ARGS__)
 
 #define RETURN_ON_TRUE(statement, ret_val, ...)             \
@@ -28,6 +30,7 @@ enum ERRORS
     CFG_PARSE_ERR   = 19,
     TMP_CNG_ERR     = 20,
     TMP_CNG_WAIT    = 21,
+    TMP_ST_INIT_ERR = 22,
 
 
 };

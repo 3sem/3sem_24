@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <poll.h>
 #include "debugging.h"
+#include "tmp_dir_st.h"
 #include "change_tmp_dir.h"
 #include "parameters_changing.h"
 
@@ -28,7 +29,7 @@ void destruct_ipc_fifo()
     unlink(CONFIG_FILE_PATH);
 }
 
-int update_config(config_st *config, const int fd_r)
+int update_config(config_st *config, tmp_st *dir_st, const int fd_r)
 {
     assert(config);
 
@@ -40,7 +41,8 @@ int update_config(config_st *config, const int fd_r)
         return 0;
 
     int config_parameter_type = 0;
-    ssize_t error = 0;
+    ssize_t error   = 0;
+    int ret_val     = 0;
 
     error = read(fd_r, &config_parameter_type, sizeof(int));
     RETURN_ON_TRUE(error == -1, 0);
@@ -50,6 +52,8 @@ int update_config(config_st *config, const int fd_r)
     case PID:
         error = read(fd_r, &config->monitoring_pid, sizeof(pid_t));
         RETURN_ON_TRUE(error == -1, -1, perror("cfg file reading error"););
+        ret_val = dir_st->methods.pid_change_update(dir_st);
+        RETURN_ON_TRUE(ret_val, ret_val);
         break;
     
     case PERIOD:

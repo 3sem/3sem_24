@@ -30,4 +30,6 @@ int load_standard_config(config_st *cfg);
 
 int save_current_config(const config_st *cfg);
 
+int print_current_config();
+
 #endif

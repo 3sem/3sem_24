@@ -6,8 +6,8 @@
 #include <string.h>
 #include <assert.h>
 #include "parse_standard_config.h"
-#include "find_file_diff.h"
 #include "debugging.h"
+#include "file_copying.h"
 
 int create_config_file(const char *path);
 
@@ -62,9 +62,23 @@ int save_current_config(const config_st *cfg)
     return 0;
 }
 
+int print_current_config()
+{
+    char path[PATH_MAX] = {};
+    snprintf(path, PATH_MAX * sizeof(char), STANDARD_CONFIG_NAME, BIN_PATH);
+
+    int cfg_fd = open(path, O_RDONLY, 0777);
+    RETURN_ON_TRUE(cfg_fd == -1, -1, perror("config file open error"););
+
+    int err_num = file_to_file(STDOUT_FILENO, cfg_fd);
+    RETURN_ON_TRUE(err_num == -1, -1);
+
+    return 0;
+}
+
 int create_config_file(const char *path)
 {
-    printf("Processmon: creating standard config file\n");
+    printf(CFG_CREATE_MSG);
 
     int cfg_fd = open(path, O_CREAT | O_RDWR, 0777);
     RETURN_ON_TRUE(cfg_fd == -1, -1, perror("config file creation error"););
@@ -94,8 +108,7 @@ int parse_config(config_st *cfg, const int cfg_fd)
         &cfg->period, cfg->output_file_path, cfg->tmp_folder_path, &tmp_del_holder);
     if (scanned != 4)
     {
-        printf("> scanned: %d\n", scanned);
-        printf("Processmon: couldn't parse config properly, attempting to create new config\n");
+        printf(CFG_PARSE_ERR_MSG);
         return CFG_PARSE_ERR;
     }
     

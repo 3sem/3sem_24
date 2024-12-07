@@ -30,7 +30,12 @@
         "find_file_diff.h": "c",
         "parse_standard_config.h": "c",
         "ftw.h": "c",
-        "config_structure.h": "c"
+        "config_structure.h": "c",
+        "parameters_changing.h": "c",
+        "sig_handlers.h": "c",
+        "file_copying.h": "c",
+        "change_tmp_dir.h": "c",
+        "tmp_dir_st.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }

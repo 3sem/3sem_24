@@ -3,7 +3,7 @@
 
 #include "config_structure.h"
 
-//Standard config is located in binary directory
+//Standard config is located in programm's binary directory
 #define STANDARD_CONFIG_NAME    "%s/standard_config.cfg"
 
 

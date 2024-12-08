@@ -149,7 +149,7 @@ int read_number_from_input()
     while (1)
     {   
         scanned = scanf("%d", &number);
-        RETURN_ON_TRUE(scanned == -1, -1, perror("input number read error"););
+        RETURN_ON_TRUE(scanned == -1, -1);//perror("input number read error"););
         if (scanned)
             break;
         

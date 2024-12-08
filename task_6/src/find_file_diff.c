@@ -9,7 +9,6 @@
 #include <memory.h>
 #include "debugging.h"
 #include "find_file_diff.h"
-#include "change_tmp_dir.h"
 #include "config_structure.h"
 #include "file_copying.h"
 #include "tmp_dir_st.h"
@@ -25,14 +24,11 @@ int file_diff(const int monitoring_pid, tmp_st *dir_st)
 {
     assert(dir_st);
 
-    if (check_tmp_changing_status())
-        return TMP_CNG_WAIT;
+    int ret_val = prepare_file_diff(monitoring_pid, dir_st);
+    RETURN_ON_TRUE(ret_val , ret_val);
 
-    int err_num = prepare_file_diff(monitoring_pid, dir_st);
-    RETURN_ON_TRUE(err_num == -1, -1);
-
-    err_num = write_diff(dir_st);
-    RETURN_ON_TRUE(err_num == -1, -1);
+    ret_val = write_diff(dir_st);
+    RETURN_ON_TRUE(ret_val == -1, -1);
 
     return 0;
 }
@@ -90,7 +86,7 @@ int prepare_file_diff(const int current_pid, const tmp_st *dir_st)
     snprintf(path, PATH_MAX * sizeof(char), "./%d.txt", current_pid);
     
     map_fd = open(path, O_RDONLY);
-    //Проверку на пропажу файла
+    RETURN_ON_TRUE(map_fd == -1 && errno == ENOENT, FILE_DELETED, printf(FILE_DELETED_MSG); errno = 0;);
     RETURN_ON_TRUE(map_fd == -1, -1, perror("couldn't open monitoring file"););
 
     RETURN_ON_TRUE(ftruncate(dir_st->old_data_fd, 0) == -1, -1, perror("ftruncate error"););

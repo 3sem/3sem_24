@@ -31,7 +31,8 @@ enum ERRORS
     TMP_CNG_ERR     = 20,
     TMP_CNG_WAIT    = 21,
     TMP_ST_INIT_ERR = 22,
-
+    DIR_OPEN_ERR    = 23,
+    FILE_DELETED    = 24
 
 };
 

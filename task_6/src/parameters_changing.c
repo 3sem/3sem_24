@@ -10,7 +10,6 @@
 #include <poll.h>
 #include "debugging.h"
 #include "tmp_dir_st.h"
-#include "change_tmp_dir.h"
 #include "parameters_changing.h"
 
 int create_ipc_fifo()
@@ -63,16 +62,18 @@ int update_config(config_st *config, tmp_st *dir_st, const int fd_r)
         break;
 
     case DIFF_FILE_FD:
+    {
         char path[PATH_MAX] = {0};
         error = read(fd_r, path, PATH_MAX * sizeof(char));
         RETURN_ON_TRUE(error == -1, -1, perror("cfg file reading error"););
 
-        RETURN_ON_TRUE(move_tmp_dir(path, config->tmp_folder_path) == -1, TMP_CNG_ERR,
+        RETURN_ON_TRUE(dir_st->methods.move_tmp_dir(dir_st, path) == -1, TMP_CNG_ERR,
             perror("Processmon: couldn't move tmp directory for some reason"););
 
-        memcpy(config->tmp_folder_path, path, PATH_MAX * sizeof(char));
+        memcpy(config->tmp_folder_path, dir_st->tmp_dir, PATH_MAX * sizeof(char));
 
         break;
+    }
 
     case SAVE_CFG:
         RETURN_ON_TRUE(save_current_config(config) == -1, -1);

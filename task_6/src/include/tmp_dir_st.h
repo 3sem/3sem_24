@@ -9,6 +9,7 @@ typedef struct op_table
     int (* pid_change_update)(tmp_st *self);
     void (* dir_desctr)(tmp_st *self, const int delete_dir_bool);
     int (* open_new_diff)(tmp_st *self);
+    int (* move_tmp_dir)(tmp_st *self, const char *new_path);
 } Ops;
 
 typedef struct temp_dir_st

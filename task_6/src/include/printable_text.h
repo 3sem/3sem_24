@@ -61,4 +61,10 @@ Interacting in the background:\n\
 
 #define CFG_PARSE_ERR_MSG   "Processmon: couldn't parse config properly, attempting to create new config\n"
 
+#define DIR_OPEN_ERR_MSG    "Processmon: couldn't open temporary directory for changing\n"
+
+#define PATH_NOT_DIR_MSG    "Processmon: path you entered is not a directory\n"
+
+#define FILE_DELETED_MSG    "Processmon: it looks like the process you watching has been terminated, finishing programm\n"
+
 #endif

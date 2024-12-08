@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <limits.h>
 #include <ftw.h>
+#include <dirent.h>
 #include <errno.h>
 #include "tmp_dir_st.h"
 #include "debugging.h"
@@ -25,6 +26,8 @@ int handle_pid_change(tmp_st *self);
 void tmp_dir_destr(tmp_st *self, const int delete_dir_bool);
 
 int open_diff_file(tmp_st *self);
+
+int move_tmp_dir(tmp_st *self, const char *new_dir);
 
 
 int tmp_dir_init(tmp_st **tmp, const char *path)
@@ -50,6 +53,7 @@ int tmp_dir_init(tmp_st **tmp, const char *path)
     st_holder->methods.pid_change_update  = handle_pid_change;
     st_holder->methods.dir_desctr         = tmp_dir_destr;
     st_holder->methods.open_new_diff      = open_diff_file;
+    st_holder->methods.move_tmp_dir       = move_tmp_dir;
 
     *tmp = st_holder;
 
@@ -145,4 +149,55 @@ int delete_file(const char *path, const struct stat *sb, int typeflag, struct FT
     (void)ftwbuf;
 
     return 0;
+}
+
+int move_tmp_dir(tmp_st *self, const char *new_dir)
+{
+    assert(self);
+    assert(new_dir);
+
+    char new_path[PATH_MAX / 2] = {0};
+    char old_path[PATH_MAX / 2] = {0};
+    int err_num                 = 0;
+
+    err_num = mkdir(new_dir, S_IFDIR | 0777);
+    if (err_num)
+    {
+        struct stat stat_st = {};
+        RETURN_ON_TRUE(stat(new_dir, &stat_st) == -1, -1);
+
+        RETURN_ON_TRUE(!(S_ISDIR(stat_st.st_mode)), err_num, printf(PATH_NOT_DIR_MSG););
+
+        err_num = 0;
+        errno   = 0;
+    }
+
+    DIR *old_dir                = opendir(self->tmp_dir);
+    RETURN_ON_TRUE(!old_dir, DIR_OPEN_ERR, printf(DIR_OPEN_ERR_MSG); unlink(new_dir););
+
+    while (1)
+    {
+        struct dirent *file_info = readdir(old_dir);
+        if (!file_info)
+            break;
+
+        if ((!strcmp(file_info->d_name, ".")) || (!strcmp(file_info->d_name, "..")))
+            continue;
+        
+        snprintf(new_path, PATH_MAX * sizeof(char), "%s/%s", new_dir, file_info->d_name);
+        snprintf(old_path, PATH_MAX * sizeof(char), "%s/%s", self->tmp_dir, file_info->d_name);
+
+        err_num = rename(old_path, new_path);
+        if (err_num) break;
+    }
+    
+    if (!err_num)
+    {
+        if (rmdir(self->tmp_dir)) perror("Processmon: old dir unlink error");
+        strcpy(self->tmp_dir, new_dir);
+    }
+
+    closedir(old_dir);
+
+    return err_num;
 }

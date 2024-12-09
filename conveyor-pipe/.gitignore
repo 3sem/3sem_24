@@ -1,0 +1,9 @@
+# JSON files
+.vscode
+
+# Executables
+*.exe
+*.out
+*.o
+
+build

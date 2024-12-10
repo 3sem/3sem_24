@@ -79,6 +79,14 @@ int update_config(config_st *config, tmp_st *dir_st, const int fd_r)
         RETURN_ON_TRUE(save_current_config(config) == -1, -1);
         break;
 
+    case SHOW_CFG:
+        print_current_parameters(config);
+        break;
+
+    case CNG_SAVE_BOOL:
+        config->tmp_delete_bool = config->tmp_delete_bool ? 0 : 1;
+        break;
+
     default:
         LOG("[error]> error occured while recieving data\n");
         return DATA_RCV_ERR;

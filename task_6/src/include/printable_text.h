@@ -21,6 +21,7 @@ Interacting in the background:\n\
 [4] - end the programm\n\
 [5] - save current parameters to standard config\n\
 [6] - show current standard config\n\
+[7] - switch between saving or deleting temporary directory\n\
 > "
 
 #define MEM_ALC_ERR_MSG     "Processmon: buffer memory allocation error\n"
@@ -29,7 +30,9 @@ Interacting in the background:\n\
 
 #define SAVING_CONFIG_MSG   "Processmon: saving config. Wait for 1 monitor period in order for config to apply\n"
 
-#define STD_CFG_MSG         "Processmon: current standard config is:\n"
+#define CUR_PAR_MSG         "Processmon: current parameters are:\n"
+
+#define CUR_PID             "CURRENT PID: %d\n"
 
 #define LINE_MSG            "\n----------------------------------------------------------------\n"
 

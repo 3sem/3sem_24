@@ -35,7 +35,8 @@
         "sig_handlers.h": "c",
         "file_copying.h": "c",
         "change_tmp_dir.h": "c",
-        "tmp_dir_st.h": "c"
+        "tmp_dir_st.h": "c",
+        "interface_process.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }

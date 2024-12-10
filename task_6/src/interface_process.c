@@ -53,7 +53,7 @@ int interact_with_user(const int fd)
     while (1)
     {
         choosen_option = read_number_from_input();
-        if ((1 <= choosen_option && choosen_option <= 6) || choosen_option == -1)
+        if ((1 <= choosen_option && choosen_option <= 7) || choosen_option == -1)
             break;
         
         printf(INPUT_ERR_MSG);
@@ -75,12 +75,9 @@ int interact_with_user(const int fd)
         printf(SAVING_CONFIG_MSG);
         return change_config(fd, SAVE_CFG, NULL, 0);
 
-    case 6:
-        printf(STD_CFG_MSG);
-        printf(LINE_MSG);
-        RETURN_ON_TRUE(print_current_config() == -1, 0, printf("Processmon: error while trying to show current config\n"););
-        printf(LINE_MSG);
-        break;
+    case 6: return change_config(fd, SHOW_CFG, NULL, 0);
+
+    case 7: return change_config(fd, CNG_SAVE_BOOL, NULL, 0);
         
     default:
         LOG("[error]> NON-existent option chosen\n");

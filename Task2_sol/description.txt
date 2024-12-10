@@ -1,0 +1,1 @@
+Emulation of full duplex pipe

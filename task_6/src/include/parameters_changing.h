@@ -12,8 +12,9 @@ enum FIFO_DATA_TYPES
     PID             = 1,
     PERIOD          = 2,
     DIFF_FILE_FD    = 3,
-    SAVE_CFG        = 4,
-    SHOW_CFG        = 5,
+    SAVE_CFG        = 5,
+    SHOW_CFG        = 6,
+    CNG_SAVE_BOOL   = 7,
 };
 
 int create_ipc_fifo();

@@ -62,18 +62,15 @@ int save_current_config(const config_st *cfg)
     return 0;
 }
 
-int print_current_config()
+void print_current_parameters(const config_st *cfg)
 {
-    char path[PATH_MAX] = {};
-    snprintf(path, PATH_MAX * sizeof(char), STANDARD_CONFIG_NAME, BIN_PATH);
+    printf(CUR_PAR_MSG);
+    printf(LINE_MSG);
+    printf(CUR_PID, cfg->monitoring_pid);
+    printf(CONFIG_FILE_STRUCTURE, cfg->period, cfg->output_file_path, cfg->tmp_folder_path, cfg->tmp_delete_bool);
+    printf(LINE_MSG);
 
-    int cfg_fd = open(path, O_RDONLY, 0777);
-    RETURN_ON_TRUE(cfg_fd == -1, -1, perror("config file open error"););
-
-    int err_num = file_to_file(STDOUT_FILENO, cfg_fd);
-    RETURN_ON_TRUE(err_num == -1, -1);
-
-    return 0;
+    return;
 }
 
 int create_config_file(const char *path)

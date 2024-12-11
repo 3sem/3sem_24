@@ -6,8 +6,10 @@
 extern int monitored_pid;
 extern int sampling_interval;
 
+void save_config();
+
 void load_config(void);
 
-void initialize_default_config();
+void initialize_default_config(void);
 
 #endif // !CONFIG_H

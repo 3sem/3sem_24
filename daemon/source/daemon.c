@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/syslog.h>
 #include <signal.h>
 #include <fcntl.h>
 #include <dirent.h>
@@ -19,20 +20,43 @@
 static volatile int keep_running = 1;
 static pthread_mutex_t config_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-// Signal handler for reloading configuration
 void handle_signal(int sig) 
 {
-    if (sig == SIGHUP) 
+    switch (sig)
     {
-        syslog(LOG_INFO, "Received SIGHUP signal, reloading configuration...");
-        pthread_mutex_lock(&config_mutex);
-        load_config();
-        pthread_mutex_unlock(&config_mutex);
-        syslog(LOG_INFO, "Configuration reloaded: pid=%d, interval=%dms", monitored_pid, sampling_interval);
-    } 
-    else if (sig == SIGINT || sig == SIGTERM) 
-    {
-        keep_running = 0;
+        case SIGHUP:
+        {
+            syslog(LOG_INFO, "received sighup signal, reloading configuration...");
+            pthread_mutex_lock(&config_mutex);
+
+            load_config();
+
+            pthread_mutex_unlock(&config_mutex);
+            syslog(LOG_INFO, "configuration reloaded: pid=%d, interval=%dms", monitored_pid, sampling_interval);
+        }
+
+        break;
+
+        case SIGINT:
+        {
+            keep_running = 1;
+        }
+
+        break;
+
+        case SIGTERM:
+        {
+            keep_running = 0;
+        }
+
+        break;
+        
+        case SIGKILL:
+        {
+            keep_running = 0;
+        }
+
+        break;
     }
 }
 
@@ -106,35 +130,50 @@ int main(int argc, char *argv[])
 {
     int daemon_mode = 0;
 
-    // Parse command-line arguments
     int opt;
-    while ((opt = getopt(argc, argv, "di")) != -1) 
+    int pid_argument = 0;
+
+    while ((opt = getopt(argc, argv, "dp:")) != -1) 
     {
         switch (opt) 
         {
-            case 'd': daemon_mode = 1; break;
-            case 'i': daemon_mode = 0; break;
-            default:
-                fprintf(stderr, "Usage: %s [-d | -i]\n", argv[0]);
+        case 'd':
+            daemonize();
+            break;
+        case 'p':
+            pid_argument = atoi(optarg);
+
+            if (pid_argument <= 0) 
+            {
+                fprintf(stderr, "Invalid PID: %s\n", optarg);
                 exit(EXIT_FAILURE);
+            }
+
+            monitored_pid = pid_argument;
+            printf("PID set to %d\n", monitored_pid);
+            break;
+        default:
+            fprintf(stderr, "Usage: %s [-d] [-p pid]\n", argv[0]);
+            exit(EXIT_FAILURE);
         }
     }
 
-    // Load initial configuration
-    load_config();
-    if (monitored_pid <= 0) {
+    save_config();
+
+    if (monitored_pid <= 0) 
+    {
         fprintf(stderr, "Invalid monitored PID in configuration file.\n");
         exit(EXIT_FAILURE);
     }
 
-    if (sampling_interval <= 0) {
+    if (sampling_interval <= 0) 
+    {
         fprintf(stderr, "Invalid sampling interval in configuration file.\n");
         exit(EXIT_FAILURE);
     }
 
     if (daemon_mode) daemonize();
 
-    // Set up signal handlers
     signal(SIGHUP, handle_signal);
     signal(SIGINT, handle_signal);
     signal(SIGTERM, handle_signal);

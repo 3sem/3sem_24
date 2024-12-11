@@ -1,0 +1,32 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "project build",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				".",
+				"-B",
+				"build"
+			],
+			"detail": "to build a project"
+		},
+		{
+			"label": "make a file with makefile",
+			"type": "shell",
+			"command": "make",
+			"args": [
+				"-C",
+				"build"
+			],
+			"detail": "run a makefile to compile a project",
+			"dependsOn": "project build",
+			"problemMatcher": [],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}

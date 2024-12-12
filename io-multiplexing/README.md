@@ -4,6 +4,8 @@
 make
 ```
 
+## Usage
+
 Run the server in terminal 1: 
 
 ```
@@ -16,13 +18,11 @@ Run the client in terminal 2:
 ./client.x
 ```
 
-To register a transim & receive fifo type:
+To register a transmit & receive fifo files type:
 
 ```
 REGISTER a b
 ```
-
-After that the program will close.
 
 To simply receive a file:
 

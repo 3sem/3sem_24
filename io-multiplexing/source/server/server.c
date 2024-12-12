@@ -18,10 +18,10 @@ const char* success_message = "Registration successful\n";
 
 void register_client(Clients* clients, const char* tx_path, const char* rx_path)
 {
-    if (clients->client_count >= MAX_CLIENTS) LOG("Max client limit reached\n"); return;
+    if (clients->client_count >= MAX_CLIENTS){ LOG("Max client limit reached\n"); return; }
 
-    if (! mkfifo(tx_path, 0666)){ LOG("Unable to create FIFO: %s\n", tx_path); return; }
-    if (! mkfifo(rx_path, 0666)){ LOG("Unable to create FIFO: %s\n", rx_path); return; }
+    if (mkfifo(tx_path, 0666) == -1){ LOG("Unable to create FIFO: %s\n", tx_path); return; }
+    if (mkfifo(rx_path, 0666) == -1){ LOG("Unable to create FIFO: %s\n", rx_path); return; }
 
     LOG("Created FIFO's\n");
 
@@ -55,20 +55,21 @@ void* handle_file_request(void* arg)
 
     Buffer* buffer = create_buffer(BUFFER_SIZE);
 
-    while (read_from_file(buffer, client->tx_fd)) { ; }
+    read_from_file(buffer, client->tx_fd);
 
-    const char* filename = &buffer->buffer[sizeof("GET")];
+    const char* filename = buffer->buffer;
 
     LOG("%s requested file: %s\n", client->tx_path, filename);
 
     int read_fd = open(filename, O_RDONLY);
 
     if (read_fd == -1) LOG("Unable to open: %s\n", filename);
-
+    /*
     while (read_from_file(buffer, read_fd))
     {
         write_to_file(buffer, client->rx_fd);
     }
+    */
 
     close(read_fd);
 
@@ -81,17 +82,19 @@ void handle_client_registration(Clients* clients, fd_set read_fds, int register_
     {
         Buffer* buffer = create_buffer(2 * PATH_MAX);
 
-        LOG("Reading from FIFO registration info...\n");
-
         read_from_file(buffer, register_fd);
 
         if (buffer->size > 0)
         {
+            LOG("Reading from FIFO registration info... %s\n", buffer->buffer);
+
             char tx_path[PATH_MAX];
             char rx_path[PATH_MAX];
 
             if (sscanf(buffer->buffer, "REGISTER %s %s", tx_path, rx_path) == 2)
             {
+                LOG("Registratng client...\n");
+
                 register_client(clients, tx_path, rx_path);
             }
             else

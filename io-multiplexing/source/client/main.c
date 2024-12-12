@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
 {
     const char* register_fifo = "register";
 
-    int register_fd = open(register_fifo, O_WRONLY | O_NONBLOCK);
+    int register_fd = open(register_fifo, O_WRONLY);
 
     Buffer* buffer = create_buffer(2 * PATH_MAX);
 

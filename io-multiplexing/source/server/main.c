@@ -13,7 +13,7 @@ int main()
 
     mkfifo(register_fifo, 0666);
 
-    int register_fd = open(register_fifo, O_RDONLY | O_NONBLOCK);
+    int register_fd = open(register_fifo, O_RDONLY);
 
     if (register_fd < 0) { LOG("Unable to open FIFO: %s", register_fifo); return -1; }
 

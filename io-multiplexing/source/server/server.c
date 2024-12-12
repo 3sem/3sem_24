@@ -53,23 +53,43 @@ void* handle_file_request(void* arg)
 {
     Client* client = (Client*) arg;
 
+    LOG("[T]: %s, [R]: %s\n", client->tx_path, client->rx_path);
+
+    int tx_fd = open(client->tx_path, O_RDWR);
+    if (tx_fd == -1) 
+    {
+        //LOG("Unable to open tx FIFO: %s\n", client->tx_path);
+        return NULL;
+    }
+
+    int rx_fd = open(client->rx_path, O_RDWR);
+    if (rx_fd == -1) 
+    {
+        //LOG("Unable to open rx FIFO: %s\n", client->rx_path);
+        close(tx_fd);
+        return NULL;
+    }
+
     Buffer* buffer = create_buffer(BUFFER_SIZE);
 
     read_from_file(buffer, client->tx_fd);
 
-    const char* filename = buffer->buffer;
+    const char* filename = &buffer->buffer[sizeof("GET")];
 
-    LOG("%s requested file: %s\n", client->tx_path, filename);
+    char* symb = strchr(buffer->buffer, '\n');
+
+    if (symb) *symb = '\0';
+
+    LOG("[%s] requested file: %s\n", client->tx_path, filename);
 
     int read_fd = open(filename, O_RDONLY);
 
     if (read_fd == -1) LOG("Unable to open: %s\n", filename);
-    /*
+
     while (read_from_file(buffer, read_fd))
     {
         write_to_file(buffer, client->rx_fd);
     }
-    */
 
     close(read_fd);
 
@@ -144,7 +164,7 @@ void run_server(Clients* clients, int register_fd)
             if (FD_ISSET(clients->clients[i].tx_fd, &read_fds)) 
             {
                 pthread_t thread;
-                pthread_create(&thread, NULL, handle_file_request, &clients[i]);
+                pthread_create(&thread, NULL, handle_file_request, &clients->clients[i]);
                 pthread_detach(thread);
             }
         }

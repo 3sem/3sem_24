@@ -1,5 +1,6 @@
 #include "../common/file_utils.h"
 #include "../common/log_utils.h"
+#include "client.h"
 
 #include <fcntl.h>
 #include <linux/limits.h>

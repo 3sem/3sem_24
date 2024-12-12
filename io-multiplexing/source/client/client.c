@@ -32,5 +32,9 @@ void destroy_clients(Clients* clients)
         unlink(clients->clients[i].rx_path);
     }
 
+    free(clients->clients);
+
+    free(clients);
+
     clients->client_count = 0;
 }

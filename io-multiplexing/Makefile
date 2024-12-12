@@ -18,8 +18,8 @@ CLIENT_HEADERS = $(CLIENT_DIR)/client.h
 SERVER_HEADERS = $(SERVER_DIR)/server.h
 
 # Output binaries
-CLIENT_BIN = client
-SERVER_BIN = server
+CLIENT_BIN = client.x
+SERVER_BIN = server.x
 
 # Object files
 CLIENT_OBJ = $(CLIENT_SRC:.c=.o) $(COMMON_SRC:.c=.o)

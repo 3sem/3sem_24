@@ -4,6 +4,7 @@
 
 #include "server.h"
 
+#include <errno.h>
 #include <linux/limits.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -20,8 +21,8 @@ void register_client(Clients* clients, const char* tx_path, const char* rx_path)
 {
     if (clients->client_count >= MAX_CLIENTS){ LOG("Max client limit reached\n"); return; }
 
-    if (mkfifo(tx_path, 0666) == -1){ LOG("Unable to create FIFO: %s\n", tx_path); return; }
-    if (mkfifo(rx_path, 0666) == -1){ LOG("Unable to create FIFO: %s\n", rx_path); return; }
+    if (mkfifo(tx_path, 0666) == -1 && errno == EEXIST){ LOG("FIFO already exists: %s\n", tx_path); return; }
+    if (mkfifo(rx_path, 0666) == -1 && errno == EEXIST){ LOG("FIFO already exists: %s\n", rx_path); return; }
 
     LOG("Created FIFO's\n");
 
@@ -94,9 +95,13 @@ void* handle_file_request(void* arg)
     close(read_fd);
 
     destroy_buffer(buffer);
+
+    LOG("Requested file granted -> [%s]\n", client->rx_path);
+
+    return NULL;
 }
 
-void handle_client_registration(Clients* clients, fd_set read_fds, int register_fd)
+int handle_client_registration(Clients* clients, fd_set read_fds, int register_fd)
 {
     if (FD_ISSET(register_fd, &read_fds))
     {
@@ -106,7 +111,7 @@ void handle_client_registration(Clients* clients, fd_set read_fds, int register_
 
         if (buffer->size > 0)
         {
-            LOG("Reading from FIFO registration info... %s\n", buffer->buffer);
+            LOG("Reading from FIFO registration info... \n");
 
             char tx_path[PATH_MAX];
             char rx_path[PATH_MAX];
@@ -116,6 +121,10 @@ void handle_client_registration(Clients* clients, fd_set read_fds, int register_
                 LOG("Registratng client...\n");
 
                 register_client(clients, tx_path, rx_path);
+            }
+            else if (! sscanf(buffer->buffer, "CLOSE"))
+            {
+                return 1;
             }
             else
             {
@@ -129,6 +138,8 @@ void handle_client_registration(Clients* clients, fd_set read_fds, int register_
 
         destroy_buffer(buffer);
     }
+
+    return 0;
 }
 
 void run_server(Clients* clients, int register_fd)
@@ -157,7 +168,9 @@ void run_server(Clients* clients, int register_fd)
         
         if (activity < 0) LOG("Activity error\n");
 
-        handle_client_registration(clients, read_fds, register_fd);
+        int result = handle_client_registration(clients, read_fds, register_fd);
+
+        if (result) { LOG("Closing server...\n"); break; }
 
         for (int i = 0; i < clients->client_count; i++) 
         {
@@ -169,6 +182,4 @@ void run_server(Clients* clients, int register_fd)
             }
         }
     }
-
-    destroy_clients(clients);
 }

@@ -23,6 +23,8 @@ int main()
 
     run_server(clients, register_fd);
 
+    destroy_clients(clients);
+
     close(register_fd);
 
     unlink(register_fifo);

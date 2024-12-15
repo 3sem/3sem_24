@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
     clock_gettime(CLOCK_MONOTONIC, &start);
 
 
-    clock_t start_time = clock();
+    
 
     for (int i = 0; i < CountThreads; i++) {
         integrals[i].start = Start + i * step;

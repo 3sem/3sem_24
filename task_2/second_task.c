@@ -192,7 +192,8 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    clock_t start = clock();
+    struct timespec start, end;
+    clock_gettime(CLOCK_MONOTONIC, &start);
     printf("Begin\n");
 
     Pipe *m = construct(SIZE);
@@ -234,8 +235,8 @@ int main(int argc, char **argv) {
         free(m->data);
         free(m);
 
-        clock_t end = clock();
-        double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
+        clock_gettime(CLOCK_MONOTONIC, &end);
+        double time_spent = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
         printf("Time spent: %f seconds\n", time_spent);
         return 0;
     }

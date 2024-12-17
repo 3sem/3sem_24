@@ -13,9 +13,7 @@
 #include <unistd.h>
 #include <memory.h>
 
-#define UDP_PORT 12345
-#define TCP_PORT 12346
-#define BROADCAST_IP "127.0.0.1"
+#include "ports.h"
 
 Servers servers_create(int max_servers_count)
 {
@@ -41,7 +39,7 @@ void servers_destroy(Servers* servers)
     servers->total_cores = 0;
 }
 
-int discover_servers(Servers* servers, int max_servers)
+int discover_servers(Servers* servers, const char* server_ip, int max_servers)
 {
     int udp_socket = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -63,7 +61,7 @@ int discover_servers(Servers* servers, int max_servers)
     memset(&broadcast_addr, 0, sizeof(broadcast_addr));
     broadcast_addr.sin_family = AF_INET;
     broadcast_addr.sin_port = htons(UDP_PORT);
-    broadcast_addr.sin_addr.s_addr = inet_addr(BROADCAST_IP);
+    broadcast_addr.sin_addr.s_addr = inet_addr(server_ip);
 
 
     char message[] = "DISCOVER";
@@ -230,16 +228,17 @@ int main(const int argc, const char *argv[])
         return EXIT_FAILURE;
     }
 
-    double start       = atof(argv[1]);
-    double end         = atof(argv[2]);
-    int    points      = atoi(argv[3]);
-    int    max_servers = atoi(argv[4]);
+    const char* server_ip = argv[1];
+    double start = atof(argv[2]);
+    double end = atof(argv[3]);
+    int points = atoi(argv[4]);
+    int max_servers = atoi(argv[5]);
 
     LOG("[Client] Integration range: [%.2f, %.2f], Points: %d, Max servers: %d\n", start, end, points, max_servers);
 
     Servers servers = servers_create(max_servers);
 
-    int num_servers = discover_servers(&servers, max_servers);
+    int num_servers = discover_servers(&servers, server_ip, max_servers);
 
     LOG("[Client] Total cores available: %d\n", servers.total_cores);
 

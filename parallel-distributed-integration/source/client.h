@@ -24,7 +24,7 @@ typedef struct _Servers Servers;
 Servers servers_create(int max_server_count);
 
 void servers_destroy(Servers* servers);
-int discover_servers(Servers* servers, int max_servers);
+int discover_servers(Servers* servers, const char* server_ip, int max_servers);
 
 double communicate_task(ServerInfo* server, Task* task); 
 

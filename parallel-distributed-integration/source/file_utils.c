@@ -50,6 +50,8 @@ int destroy_buffer(Buffer* buffer)
     buffer->size     = 0;
     buffer->capacity = 0;
 
+    free(buffer);
+
     return 0;
 }
 

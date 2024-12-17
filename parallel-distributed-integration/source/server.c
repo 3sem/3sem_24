@@ -27,7 +27,7 @@ void* tcp_connection_handler(void *arg)
         LOG("[Server] Failed to receive task\n");
     }
 
-    LOG("Received task: start=%.2f, end=%.2f, points=%zu\n", task.start, task.end, task.points);
+    LOG("[Server] Recieved task: start=%.2f, end=%.2f, points=%zu\n", task.start, task.end, task.points);
 
     monte_carlo_integration(&task, &result);
 
@@ -36,7 +36,7 @@ void* tcp_connection_handler(void *arg)
         LOG("[Server] Failed to send result\n");
     }
 
-    printf("Sent result: %.10f\n", result);
+    printf("[Server] Sent result: %.10f\n", result);
 
     close(client_socket);
     return NULL;
@@ -56,10 +56,10 @@ void* udp_discovery_response(void* arg)
 
     if (bind(udp_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) 
     {
-        LOG("UDP bind failed");
+        LOG("[Server] UDP bind failed");
     }
 
-    LOG("UDP discovery server started. Listening on port %d\n", UDP_PORT);
+    LOG("[Server] UDP discovery server started. Listening on port %d\n", UDP_PORT);
 
     char core_message[BUFFER_SIZE];
     snprintf(core_message, sizeof(core_message), "%d", cores);
@@ -73,14 +73,14 @@ void* udp_discovery_response(void* arg)
 
         if (bytes_received < 0) 
         {
-            LOG("Failed to receive UDP packet");
+            LOG("[Server] Failed to receive UDP packet");
         }
 
         buffer->buffer[bytes_received] = '\0';
 
         if (strcmp(buffer->buffer, "DISCOVER") == 0) 
         {
-            LOG("Received DISCOVER request from %s\n", inet_ntoa(client_addr.sin_addr));
+            LOG("[Server] Received DISCOVER request from %s\n", inet_ntoa(client_addr.sin_addr));
 
             sendto(udp_socket, core_message, strlen(core_message), 0, (struct sockaddr *)&client_addr, client_len);
         }
@@ -96,7 +96,7 @@ void* tcp_server(void* arg)
     int server_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (server_socket < 0) 
     {
-        LOG("TCP socket creation failed\n");
+        LOG("[Server] TCP socket creation failed\n");
         return NULL;
     }
 
@@ -108,40 +108,38 @@ void* tcp_server(void* arg)
 
     if (bind(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) 
     {
-        LOG("TCP bind failed\n");
+        LOG("[Server] TCP bind failed\n");
         return NULL;
     }
 
     if (listen(server_socket, 1) < 0) 
     {
-        LOG("TCP listen failed\n");
+        LOG("[Server] TCP listen failed\n");
         return NULL;
     }
 
-    LOG("TCP server started. Listening on port %d\n", TCP_PORT);
+    LOG("[Server] TCP server started. Listening on port %d\n", TCP_PORT);
 
     while (1) 
     {
-        LOG("I'm here\n");
         socklen_t client_len = sizeof(client_addr);
 
         int client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &client_len);
 
         if (client_socket < 0) 
         {
-            LOG("Failed to accept client connection: %s\n", strerror(errno));
+            LOG("[Server] Failed to accept client connection: %s\n", strerror(errno));
         }
 
-        LOG("Accepted connection from %s\n", inet_ntoa(client_addr.sin_addr));
+        LOG("[Server] Accepted connection from %s\n", inet_ntoa(client_addr.sin_addr));
 
         pthread_t thread_id;
 
         if (pthread_create(&thread_id, NULL, tcp_connection_handler, (void*)&client_socket) != 0) 
         {
-            LOG("Failed to create thread: %s\n", strerror(errno));
+            LOG("[Server] Failed to create thread: %s\n", strerror(errno));
             close(client_socket);
         }
-        else
         {
             pthread_detach(thread_id);
         }

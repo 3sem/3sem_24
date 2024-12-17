@@ -5,7 +5,7 @@
 #include <pthread.h>
 #include <unistd.h>
 
-void* thread_worker(void *arg) 
+void* thread_worker(void* arg) 
 {
     ThreadTask *task = (ThreadTask *)arg;
     double sum = 0.0;
@@ -21,7 +21,7 @@ void* thread_worker(void *arg)
     pthread_exit(NULL);
 }
 
-void monte_carlo_integration(Task *task, double *result) 
+void monte_carlo_integration(Task* task, double* result) 
 {
     int num_cores = sysconf(_SC_NPROCESSORS_ONLN);
 

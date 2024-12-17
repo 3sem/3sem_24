@@ -151,10 +151,11 @@ double communicate_task(ServerInfo* server, Task* task)
     {
         if (++retries >= max_retries) 
         {
-            LOG("Failed to connect to server after retries\n");
+            LOG("[Client] Failed to connect to server after retries\n");
             return 0;
         }
-        LOG("Retrying connection to server...\n");
+        LOG("[Client] Retrying connection to server...\n");
+
         sleep(1);
     }
 
@@ -164,14 +165,14 @@ double communicate_task(ServerInfo* server, Task* task)
 
     if (send(tcp_socket, task, sizeof(Task), 0) < 0) 
     {
-        LOG("Failed to send task\n");
+        LOG("[Client] Failed to send task\n");
     }
 
     double result = 0;
 
     if (recv(tcp_socket, &result, sizeof(double), 0) < 0) 
     {
-        LOG("Failed to receive result\n");
+        LOG("[Client] Failed to receive result\n");
     }
 
     LOG("[Client] Received result from server %s: %.10f\n", 
@@ -211,7 +212,7 @@ double distribute_tasks(Servers* servers, Task* global_task)
             .points = points_per_core * cur_server_cores,
         };
 
-        LOG("Give task to server: %s\n"
+        LOG("[Client] Give task to server: %s\n"
             "start[%lg], end[%lg], points[%zu]\n", inet_ntoa(servers->server[i].address.sin_addr)
                                                  , task.start, task.end, task.points);
 

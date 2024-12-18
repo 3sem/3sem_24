@@ -2,11 +2,11 @@
 #include <assert.h>
 #include "options.h"
 #include "debugging.h"
+#include "deamon.h"
 #include "interactive_mode.h"
 
-int     run_deamon();
 
-pid_t   parse_pid(const char *pid_line);
+int parse_pid(const char *pid_line);
 
 void    show_help();
 
@@ -14,7 +14,7 @@ int execute_option(char const *argv[])
 {
     assert(argv);
 
-    pid_t pid       = 0;
+    int pid       = 0;
 
     unsigned int option = parse_options(argv[1]);
     RETURN_ON_TRUE(option == ERR_OPT, ERR_OPT);
@@ -29,8 +29,7 @@ int execute_option(char const *argv[])
     switch (option)
     {
     case DEAMON:
-        RETURN_ON_TRUE(run_deamon(), 0);
-        break;
+        return run_deamon(pid);
     
     case INTERACTIVE:
     case INTERACTIVE_IMP:
@@ -48,18 +47,13 @@ int execute_option(char const *argv[])
     return 0;
 }
 
-int run_deamon()
-{
-    return 0;
-}
-
-pid_t parse_pid(const char *pid_line)
+int parse_pid(const char *pid_line)
 {
     assert(pid_line);
 
-    pid_t pid = 0;
-    if (!sscanf(pid_line, "%d", &pid))
-        return ERR_PID;
+    int pid = 0;
+    if ((!sscanf(pid_line, "%d", &pid)) || (pid <= 0))
+        return ERR_PID;    
 
     return pid;
 }

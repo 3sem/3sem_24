@@ -3,6 +3,6 @@
 
 #include <sys/types.h>
 
-int functional_process(const pid_t pid_to_monitor, const int fd);
+int functional_process(const int pid_to_monitor, const int fd);
 
 #endif

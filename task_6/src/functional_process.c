@@ -11,7 +11,7 @@
 #include "find_file_diff.h"
 #include "tmp_dir_st.h"
 
-int functional_process(const pid_t pid_to_monitor, const int ipc_fd)
+int functional_process(const int pid_to_monitor, const int ipc_fd)
 {
     RETURN_ON_TRUE(signal_handler_set(technical_sigint, SIGINT) == -1, -1);
 

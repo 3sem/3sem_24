@@ -5,7 +5,7 @@
 
 typedef struct 
 {
-    pid_t           monitoring_pid;
+    int             monitoring_pid;
     unsigned int    period;
     char            *output_file_path;
     char            *tmp_folder_path;

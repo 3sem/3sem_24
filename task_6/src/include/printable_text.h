@@ -70,4 +70,6 @@ Interacting in the background:\n\
 
 #define FILE_DELETED_MSG    "Processmon: it looks like the process you watching has been terminated, finishing programm\n"
 
+#define MAP_OPEN_ERR_MSG    "Processmon: couldn't open map file for reading\n"
+
 #endif

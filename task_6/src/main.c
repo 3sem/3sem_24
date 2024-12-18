@@ -2,7 +2,7 @@
 #include "debugging.h"
 #include "options.h"
 
-//TO DO: cделать демона, добавить новые команды управления программой, сделать обработку дифф файлов
+//TO DO: cделать демона, сделать обработку дифф файлов
 
 int main(int argc, char const *argv[])
 {

@@ -36,7 +36,10 @@
         "file_copying.h": "c",
         "change_tmp_dir.h": "c",
         "tmp_dir_st.h": "c",
-        "interface_process.h": "c"
+        "interface_process.h": "c",
+        "deamon.h": "c",
+        "memory.h": "c",
+        "errno.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }

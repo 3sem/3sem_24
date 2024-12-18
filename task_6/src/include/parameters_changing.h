@@ -5,7 +5,7 @@
 #include "parse_standard_config.h"
 #include "tmp_dir_st.h"
 
-#define CONFIG_FILE_PATH   "./processmon_config.cfg"
+#define CONFIG_FILE_PATH   "/tmp/processmon_param"
 
 enum FIFO_DATA_TYPES
 {

@@ -9,7 +9,7 @@
 
 #define STANDARD_PERIOD         (unsigned int)5
 #define STANDARD_FILE_OUTPUT    "./output.txt"
-#define STANDARD_TMP_PATH       "./processmon_tmp"
+#define STANDARD_TMP_PATH       "/tmp/processmon_data"
 #define STANDARD_TMP_DEL_BOOL   1
 
 

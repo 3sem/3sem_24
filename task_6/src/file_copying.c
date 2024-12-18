@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <string.h>
+#include <errno.h>
 #include "debugging.h"
 #include "file_copying.h"
 
@@ -40,6 +42,25 @@ int file_to_file(const int to_fd, const int from_fd)
     LOG("> %ld bytes were written from buff\n", bytes_read);
 
     free(buff);
+
+    return 0;
+}
+
+int maps_to_file(const int fd, const char *map_path)
+{
+    char buff[MAP_BUFF_SIZE]    = {0};
+    ssize_t ret_val                 = 0;
+    FILE *map_f = fopen(map_path, "rb");
+    RETURN_ON_TRUE(!map_f && errno == ENOENT, FILE_DELETED, printf(FILE_DELETED_MSG); errno = 0;);
+    RETURN_ON_TRUE(!map_f, FILE_OPEN_ERR, perror("couldn't open monitoring file"););
+
+    while (fgets(buff, MAP_BUFF_SIZE * sizeof(char), map_f) != NULL)
+    {
+        ret_val = write(fd, buff, strlen(buff));
+        RETURN_ON_TRUE(ret_val == -1, -1, perror("return while writing from map to data"););
+    }
+    
+    fclose(map_f);
 
     return 0;
 }

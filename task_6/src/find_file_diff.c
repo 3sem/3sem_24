@@ -80,14 +80,8 @@ int prepare_file_diff(const int current_pid, const tmp_st *dir_st)
 {
     assert(dir_st);
 
-    int map_fd      = 0;
-
     char path[PATH_MAX] = {0};
-    snprintf(path, PATH_MAX * sizeof(char), "./%d.txt", current_pid);
-    
-    map_fd = open(path, O_RDONLY);
-    RETURN_ON_TRUE(map_fd == -1 && errno == ENOENT, FILE_DELETED, printf(FILE_DELETED_MSG); errno = 0;);
-    RETURN_ON_TRUE(map_fd == -1, -1, perror("couldn't open monitoring file"););
+    snprintf(path, PATH_MAX * sizeof(char), MAPS_DIR, current_pid);
 
     RETURN_ON_TRUE(ftruncate(dir_st->old_data_fd, 0) == -1, -1, perror("ftruncate error"););
     RETURN_ON_TRUE(lseek(dir_st->old_data_fd, SEEK_SET, 0) == -1, -1, perror("lseek error\n"););
@@ -95,9 +89,8 @@ int prepare_file_diff(const int current_pid, const tmp_st *dir_st)
 
     RETURN_ON_TRUE(ftruncate(dir_st->new_data_fd, 0) == -1, -1, perror("ftruncate error"););
     RETURN_ON_TRUE(lseek(dir_st->new_data_fd, SEEK_SET, 0) == -1, -1, perror("lseek error\n"););
-    RETURN_ON_TRUE(file_to_file(dir_st->new_data_fd, map_fd) == -1, -1);
-
-    close(map_fd);
+    int ret_val = maps_to_file(dir_st->new_data_fd, path);
+    RETURN_ON_TRUE(ret_val, ret_val);
 
     return 0;
 }
